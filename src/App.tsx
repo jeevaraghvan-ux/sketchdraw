@@ -6,11 +6,13 @@ import { Pad } from './components/Pad';
 import { Streak } from './components/Streak';
 import { AuthModal } from './components/AuthModal';
 import { LegalModal } from './components/LegalModals';
+import { OpeningIntro } from './components/OpeningIntro';
 import type { UserProfile, DrawingSurface, DrawingTool } from './types';
 import { getCurrentUser, signOutUser, getSupabaseClient } from './services/supabase';
 import { PenTool, Heart } from 'lucide-react';
 
 export function App() {
+  const [showIntro, setShowIntro] = useState(true);
   const [activeTab, setActiveTab] = useState<'home' | 'discover' | 'pad' | 'streak'>('home');
   const [user, setUser] = useState<UserProfile | null>(null);
 
@@ -213,6 +215,15 @@ export function App() {
             >
               Terms of Service
             </a>
+            <button
+              onClick={() => {
+                setShowIntro(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-brand-cyan transition-colors"
+            >
+              Replay Intro ✨
+            </button>
           </div>
 
           <div className="flex items-center gap-2 text-slate-500 text-[11px]">
@@ -224,7 +235,12 @@ export function App() {
         </div>
       </footer>
 
-      {/* Auth Modal (Sign in / Google Auth redirect) */}
+      {/* Opening Intro Animation */}
+      {showIntro && (
+        <OpeningIntro onComplete={() => setShowIntro(false)} />
+      )}
+
+      {/* Auth Modal (Sign in / Email verification) */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
