@@ -5,10 +5,9 @@ import { Discover } from './components/Discover';
 import { Pad } from './components/Pad';
 import { Streak } from './components/Streak';
 import { AuthModal } from './components/AuthModal';
-import { SupabaseGuideModal } from './components/SupabaseGuideModal';
 import type { UserProfile, DrawingSurface, DrawingTool } from './types';
 import { getCurrentUser, signOutUser, getSupabaseClient } from './services/supabase';
-import { PenTool, Heart, Key } from 'lucide-react';
+import { PenTool, Heart } from 'lucide-react';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'discover' | 'pad' | 'streak'>('home');
@@ -16,7 +15,6 @@ export function App() {
 
   // Modals
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
 
   // Presets passed to The Pad
   const [padPresets, setPadPresets] = useState<{
@@ -101,7 +99,6 @@ export function App() {
         }}
         user={user}
         onOpenAuth={() => setIsAuthModalOpen(true)}
-        onOpenGuide={() => setIsGuideModalOpen(true)}
         onSignOut={handleSignOut}
       />
 
@@ -163,35 +160,40 @@ export function App() {
           {/* Quick tab links */}
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-medium">
             <button
-              onClick={() => setActiveTab('home')}
+              onClick={() => {
+                setActiveTab('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="hover:text-white transition-colors"
             >
               Home
             </button>
             <button
-              onClick={() => setActiveTab('discover')}
+              onClick={() => {
+                setActiveTab('discover');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="hover:text-brand-cyan transition-colors"
             >
               Discover
             </button>
             <button
-              onClick={() => setActiveTab('pad')}
+              onClick={() => {
+                setActiveTab('pad');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="hover:text-brand-purple transition-colors"
             >
               The Pad
             </button>
             <button
-              onClick={() => setActiveTab('streak')}
+              onClick={() => {
+                setActiveTab('streak');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="hover:text-brand-orange transition-colors"
             >
               The Streak
-            </button>
-            <button
-              onClick={() => setIsGuideModalOpen(true)}
-              className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors"
-            >
-              <Key className="w-3.5 h-3.5" />
-              <span>Supabase / Google Guide</span>
             </button>
           </div>
 
@@ -211,20 +213,6 @@ export function App() {
         onAuthSuccess={(profile) => {
           setUser(profile);
           setIsAuthModalOpen(false);
-        }}
-        onOpenGuide={() => {
-          setIsAuthModalOpen(false);
-          setIsGuideModalOpen(true);
-        }}
-      />
-
-      {/* Supabase & Google Cloud Console Step-by-Step Guide Modal */}
-      <SupabaseGuideModal
-        isOpen={isGuideModalOpen}
-        onClose={() => setIsGuideModalOpen(false)}
-        onConfigUpdated={async () => {
-          const profile = await getCurrentUser();
-          setUser(profile);
         }}
       />
 

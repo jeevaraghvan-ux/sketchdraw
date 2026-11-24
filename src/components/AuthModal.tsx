@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles, User, AlertCircle, ArrowRight, ShieldCheck, BookOpen } from 'lucide-react';
+import { X, Sparkles, User, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 import { signInWithGoogle, signInAsGuest } from '../services/supabase';
 import type { UserProfile } from '../types';
 
@@ -7,14 +7,12 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAuthSuccess: (profile: UserProfile) => void;
-  onOpenGuide: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   onAuthSuccess,
-  onOpenGuide
 }) => {
   const [guestName, setGuestName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,7 +29,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setErrorMessage(result.error);
       setLoading(false);
     }
-    // If redirected, the browser navigates to Supabase Google OAuth
   };
 
   const handleGuestSignIn = (e: React.FormEvent) => {
@@ -59,11 +56,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-tr from-brand-pink via-brand-purple to-brand-cyan flex items-center justify-center shadow-lg shadow-brand-purple/25">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-black text-white tracking-tight">
+          <h2 className="text-2xl font-black text-white tracking-tight font-display">
             Sign In to <span className="gradient-text-rainbow">SketchDraw</span>
           </h2>
           <p className="text-xs text-slate-400 max-w-xs mx-auto">
-            Sign in with Google to sync your drawings, track your daily streak, and compete on the leaderboard!
+            Sign in to track your drawing streak, earn artist badges, and climb the global leaderboard!
           </p>
         </div>
 
@@ -72,15 +69,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-xs text-red-300 flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <p className="font-semibold text-red-200">Supabase Connection Notice</p>
+              <p className="font-semibold text-red-200">Notice</p>
               <p className="leading-relaxed">{errorMessage}</p>
-              <button
-                type="button"
-                onClick={onOpenGuide}
-                className="text-brand-cyan hover:underline font-semibold block pt-1"
-              >
-                View Step-by-Step Setup Guide &rarr;
-              </button>
             </div>
           </div>
         )}
@@ -111,18 +101,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <div className="flex flex-col text-left">
-              <span>{loading ? 'Redirecting to Supabase...' : 'Sign in with Google'}</span>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenGuide}
-            className="w-full py-2 px-3 rounded-lg bg-dark-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-400 hover:text-brand-cyan transition-colors flex items-center justify-center gap-1.5"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-brand-purple" />
-            <span>Need Google &amp; Supabase Step-by-Step Guide?</span>
+            <span className="font-bold">{loading ? 'Redirecting to Supabase...' : 'Sign in with Google'}</span>
           </button>
         </div>
 
@@ -130,7 +109,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <div className="relative flex items-center justify-center">
           <div className="border-t border-slate-800 w-full"></div>
           <span className="bg-dark-850 px-3 text-[11px] font-medium text-slate-500 uppercase tracking-wider">
-            Or try instantly
+            Or enter as guest
           </span>
         </div>
 
@@ -166,7 +145,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Safe privacy footer */}
         <div className="text-[11px] text-center text-slate-500 flex items-center justify-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span>All sketches stored securely in your browser &amp; cloud.</span>
+          <span>All sketches stored securely in your browser &amp; Supabase cloud.</span>
         </div>
 
       </div>

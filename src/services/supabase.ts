@@ -11,17 +11,20 @@ const STORAGE_KEYS = {
   LEADERBOARD: 'sketchdraw_leaderboard',
 };
 
+// Default Supabase publishable key provided by user
+const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_5OsLIf9_6xmwnGuQiRbgng_VXVzZwZz';
+
 // Check env or localStorage
 export function getSupabaseCredentials(): { url: string; anonKey: string } {
-  const envUrl = import.meta.env.VITE_SUPABASE_URL as string || '';
-  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string || '';
+  const envUrl = (import.meta.env.VITE_SUPABASE_URL as string) || '';
+  const envKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string) || '';
 
   const localUrl = localStorage.getItem(STORAGE_KEYS.SUPABASE_URL) || '';
   const localKey = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || '';
 
   return {
     url: localUrl || envUrl || '',
-    anonKey: localKey || envKey || ''
+    anonKey: localKey || envKey || DEFAULT_SUPABASE_ANON_KEY
   };
 }
 
@@ -29,7 +32,7 @@ let supabaseInstance: SupabaseClient | null = null;
 
 export function getSupabaseClient(): SupabaseClient | null {
   const { url, anonKey } = getSupabaseCredentials();
-  if (url && anonKey && url.startsWith('http')) {
+  if (url && anonKey && (url.startsWith('http://') || url.startsWith('https://'))) {
     if (!supabaseInstance) {
       try {
         supabaseInstance = createClient(url, anonKey);
@@ -45,22 +48,10 @@ export function getSupabaseClient(): SupabaseClient | null {
 
 export function isSupabaseConfigured(): boolean {
   const { url, anonKey } = getSupabaseCredentials();
-  return Boolean(url && anonKey && url.startsWith('http'));
+  return Boolean(url && anonKey && (url.startsWith('http://') || url.startsWith('https://')));
 }
 
-export function saveCustomSupabaseConfig(url: string, key: string) {
-  if (url) localStorage.setItem(STORAGE_KEYS.SUPABASE_URL, url.trim());
-  if (key) localStorage.setItem(STORAGE_KEYS.SUPABASE_KEY, key.trim());
-  supabaseInstance = null; // Reset to recreate
-}
-
-export function clearCustomSupabaseConfig() {
-  localStorage.removeItem(STORAGE_KEYS.SUPABASE_URL);
-  localStorage.removeItem(STORAGE_KEYS.SUPABASE_KEY);
-  supabaseInstance = null;
-}
-
-// Initial mock profile for quick guest / demo experience
+// Initial profile storage for session
 function getStoredProfile(): UserProfile | null {
   const data = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
   if (data) {
@@ -85,23 +76,27 @@ export function saveStoredProfile(profile: UserProfile | null) {
 export async function getCurrentUser(): Promise<UserProfile | null> {
   const client = getSupabaseClient();
   if (client) {
-    const { data: { session } } = await client.auth.getSession();
-    if (session?.user) {
-      const user = session.user;
-      const meta = user.user_metadata || {};
-      const stored = getStoredProfile();
-      return {
-        id: user.id,
-        email: user.email,
-        name: meta.full_name || meta.name || user.email?.split('@')[0] || 'Artist',
-        avatarUrl: meta.avatar_url || meta.picture || '🎨',
-        isGuest: false,
-        streak: stored?.streak || 1,
-        bestStreak: stored?.bestStreak || 1,
-        totalDrawings: stored?.totalDrawings || 1,
-        lastDrawnDate: stored?.lastDrawnDate || new Date().toISOString().split('T')[0],
-        badges: stored?.badges || ['Creative Spark']
-      };
+    try {
+      const { data: { session } } = await client.auth.getSession();
+      if (session?.user) {
+        const user = session.user;
+        const meta = user.user_metadata || {};
+        const stored = getStoredProfile();
+        return {
+          id: user.id,
+          email: user.email,
+          name: meta.full_name || meta.name || user.email?.split('@')[0] || 'Artist',
+          avatarUrl: meta.avatar_url || meta.picture || '🎨',
+          isGuest: false,
+          streak: stored?.streak || 1,
+          bestStreak: stored?.bestStreak || 1,
+          totalDrawings: stored?.totalDrawings || 1,
+          lastDrawnDate: stored?.lastDrawnDate || new Date().toISOString().split('T')[0],
+          badges: stored?.badges || ['Creative Spark']
+        };
+      }
+    } catch {
+      // ignore
     }
   }
 
@@ -113,7 +108,7 @@ export async function signInWithGoogle(): Promise<{ error?: string; redirected?:
   const client = getSupabaseClient();
   if (!client) {
     return {
-      error: 'Supabase credentials are not configured yet. Follow the step-by-step guide below to configure Google Auth in Supabase, or continue in Guest Mode!'
+      error: 'Supabase Project URL is required to redirect to Google OAuth. Please add VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co to your environment variables or Vercel settings.'
     };
   }
 

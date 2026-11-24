@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Flame, Compass, PenTool, User, LogOut, 
-  Key, ChevronDown, CheckCircle2 
+  ChevronDown, CheckCircle2 
 } from 'lucide-react';
 import type { UserProfile } from '../types';
 
@@ -10,7 +10,6 @@ interface NavbarProps {
   onSelectTab: (tab: 'home' | 'discover' | 'pad' | 'streak') => void;
   user: UserProfile | null;
   onOpenAuth: () => void;
-  onOpenGuide: () => void;
   onSignOut: () => void;
 }
 
@@ -19,7 +18,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectTab,
   user,
   onOpenAuth,
-  onOpenGuide,
   onSignOut
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -106,19 +104,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </nav>
 
-        {/* Right: User / Streak / Setup Guide */}
+        {/* Right: User / Sign In Button */}
         <div className="flex items-center gap-2.5">
-          
-          {/* Guide Quick Access */}
-          <button
-            onClick={onOpenGuide}
-            title="Supabase & Google Auth Step-by-Step Setup"
-            className="p-2 text-slate-400 hover:text-brand-cyan hover:bg-dark-800 rounded-xl border border-transparent hover:border-slate-800 transition-all flex items-center gap-1.5 text-xs"
-          >
-            <Key className="w-4 h-4 text-emerald-400" />
-            <span className="hidden sm:inline font-medium text-slate-300">Auth Guide</span>
-          </button>
-
           {user ? (
             <div className="relative">
               <button
@@ -171,17 +158,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>My Streak &amp; Leaderboard</span>
                   </button>
 
-                  <button
-                    onClick={() => {
-                      onOpenGuide();
-                      setDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-dark-800 flex items-center gap-2 transition-colors"
-                  >
-                    <Key className="w-4 h-4 text-brand-cyan" />
-                    <span>Supabase / Google Config</span>
-                  </button>
-
                   <div className="border-t border-slate-800 my-1"></div>
 
                   <button
@@ -200,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           ) : (
             <button
               onClick={onOpenAuth}
-              className="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan hover:brightness-110 text-white text-xs font-semibold shadow-md shadow-brand-purple/20 active:scale-95 transition-all flex items-center gap-1.5"
+              className="py-2 px-4 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan hover:brightness-110 text-white text-xs font-bold shadow-md shadow-brand-purple/20 active:scale-95 transition-all flex items-center gap-1.5"
             >
               <User className="w-3.5 h-3.5" />
               <span>Sign In</span>
