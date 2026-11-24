@@ -5,6 +5,7 @@ import { Discover } from './components/Discover';
 import { Pad } from './components/Pad';
 import { Streak } from './components/Streak';
 import { AuthModal } from './components/AuthModal';
+import { LegalModal } from './components/LegalModals';
 import type { UserProfile, DrawingSurface, DrawingTool } from './types';
 import { getCurrentUser, signOutUser, getSupabaseClient } from './services/supabase';
 import { PenTool, Heart } from 'lucide-react';
@@ -15,6 +16,7 @@ export function App() {
 
   // Modals
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [legalModalType, setLegalModalType] = useState<'privacy' | 'terms' | null>(null);
 
   // Presets passed to The Pad
   const [padPresets, setPadPresets] = useState<{
@@ -195,6 +197,18 @@ export function App() {
             >
               The Streak
             </button>
+            <button
+              onClick={() => setLegalModalType('privacy')}
+              className="hover:text-slate-300 transition-colors"
+            >
+              Privacy Policy
+            </button>
+            <button
+              onClick={() => setLegalModalType('terms')}
+              className="hover:text-slate-300 transition-colors"
+            >
+              Terms of Service
+            </button>
           </div>
 
           <div className="flex items-center gap-2 text-slate-500 text-[11px]">
@@ -214,6 +228,12 @@ export function App() {
           setUser(profile);
           setIsAuthModalOpen(false);
         }}
+      />
+
+      {/* Legal Privacy / Terms Modal */}
+      <LegalModal
+        type={legalModalType}
+        onClose={() => setLegalModalType(null)}
       />
 
     </div>
