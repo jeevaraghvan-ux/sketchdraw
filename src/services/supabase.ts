@@ -11,7 +11,8 @@ const STORAGE_KEYS = {
   LEADERBOARD: 'sketchdraw_leaderboard',
 };
 
-// Default Supabase publishable key provided by user
+// Default Supabase project credentials
+const DEFAULT_SUPABASE_URL = 'https://qbrqoblmwnuhckcqhzby.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_5OsLIf9_6xmwnGuQiRbgng_VXVzZwZz';
 
 // Check env or localStorage
@@ -23,7 +24,7 @@ export function getSupabaseCredentials(): { url: string; anonKey: string } {
   const localKey = localStorage.getItem(STORAGE_KEYS.SUPABASE_KEY) || '';
 
   return {
-    url: localUrl || envUrl || '',
+    url: localUrl || envUrl || DEFAULT_SUPABASE_URL,
     anonKey: localKey || envKey || DEFAULT_SUPABASE_ANON_KEY
   };
 }
