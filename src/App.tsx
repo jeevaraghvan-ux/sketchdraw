@@ -197,18 +197,22 @@ export function App() {
             >
               The Streak
             </button>
-            <button
-              onClick={() => setLegalModalType('privacy')}
+            <a
+              href="/privacy.html"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-slate-300 transition-colors"
             >
               Privacy Policy
-            </button>
-            <button
-              onClick={() => setLegalModalType('terms')}
+            </a>
+            <a
+              href="/terms.html"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hover:text-slate-300 transition-colors"
             >
               Terms of Service
-            </button>
+            </a>
           </div>
 
           <div className="flex items-center gap-2 text-slate-500 text-[11px]">

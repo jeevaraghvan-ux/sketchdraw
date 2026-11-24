@@ -86,7 +86,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
         return {
           id: user.id,
           email: user.email,
-          name: meta.full_name || meta.name || user.email?.split('@')[0] || 'Artist',
+          name: meta.username || meta.full_name || meta.name || user.email?.split('@')[0] || 'Artist',
           avatarUrl: meta.avatar_url || meta.picture || '🎨',
           isGuest: false,
           streak: stored?.streak || 1,
@@ -105,26 +105,148 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
   return getStoredProfile();
 }
 
-export async function signInWithGoogle(): Promise<{ error?: string; redirected?: boolean }> {
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+  username: string
+): Promise<{ error?: string; user?: any; needsVerification?: boolean }> {
   const client = getSupabaseClient();
   if (!client) {
-    return {
-      error: 'Supabase Project URL is required to redirect to Google OAuth. Please add VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co to your environment variables or Vercel settings.'
-    };
+    return { error: 'Supabase client is not connected.' };
   }
-
   try {
-    const { error } = await client.auth.signInWithOAuth({
-      provider: 'google',
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = username.trim() || cleanEmail.split('@')[0];
+
+    const { data, error } = await client.auth.signUp({
+      email: cleanEmail,
+      password,
       options: {
-        redirectTo: window.location.origin
+        data: {
+          username: cleanUsername,
+          full_name: cleanUsername,
+          name: cleanUsername
+        }
       }
     });
 
     if (error) return { error: error.message };
-    return { redirected: true };
+    return { user: data.user, needsVerification: true };
   } catch (err: any) {
-    return { error: err.message || 'Failed to initialize Google Auth' };
+    return { error: err.message || 'Failed to sign up.' };
+  }
+}
+
+export async function verifyEmailCode(
+  email: string,
+  token: string
+): Promise<{ error?: string; profile?: UserProfile }> {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { error: 'Supabase client is not connected.' };
+  }
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanToken = token.trim();
+
+    // Try 'signup' verification type first
+    let { data, error } = await client.auth.verifyOtp({
+      email: cleanEmail,
+      token: cleanToken,
+      type: 'signup'
+    });
+
+    if (error) {
+      // Fallback to 'email' type if 'signup' didn't match
+      const retry = await client.auth.verifyOtp({
+        email: cleanEmail,
+        token: cleanToken,
+        type: 'email'
+      });
+      if (retry.error) {
+        return { error: retry.error.message || error.message };
+      }
+      data = retry.data;
+    }
+
+    if (data?.user) {
+      const meta = data.user.user_metadata || {};
+      const name = meta.username || meta.full_name || meta.name || cleanEmail.split('@')[0];
+      const profile: UserProfile = {
+        id: data.user.id,
+        email: data.user.email,
+        name,
+        avatarUrl: '🎨',
+        isGuest: false,
+        streak: 1,
+        bestStreak: 1,
+        totalDrawings: 1,
+        lastDrawnDate: new Date().toISOString().split('T')[0],
+        badges: ['Verified Artist', 'First Stroke']
+      };
+      saveStoredProfile(profile);
+      return { profile };
+    }
+    return { error: 'Verification failed. Please check the code and try again.' };
+  } catch (err: any) {
+    return { error: err.message || 'Failed to verify code.' };
+  }
+}
+
+export async function signInWithEmailPassword(
+  email: string,
+  password: string
+): Promise<{ error?: string; profile?: UserProfile }> {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { error: 'Supabase client is not connected.' };
+  }
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const { data, error } = await client.auth.signInWithPassword({
+      email: cleanEmail,
+      password
+    });
+
+    if (error) return { error: error.message };
+
+    if (data?.user) {
+      const meta = data.user.user_metadata || {};
+      const name = meta.username || meta.full_name || meta.name || cleanEmail.split('@')[0];
+      const stored = getStoredProfile();
+      const profile: UserProfile = {
+        id: data.user.id,
+        email: data.user.email,
+        name,
+        avatarUrl: meta.avatar_url || '🎨',
+        isGuest: false,
+        streak: stored?.streak || 1,
+        bestStreak: stored?.bestStreak || 1,
+        totalDrawings: stored?.totalDrawings || 1,
+        lastDrawnDate: stored?.lastDrawnDate || new Date().toISOString().split('T')[0],
+        badges: stored?.badges || ['Welcome Back']
+      };
+      saveStoredProfile(profile);
+      return { profile };
+    }
+    return { error: 'Unable to sign in. Please check your credentials.' };
+  } catch (err: any) {
+    return { error: err.message || 'Sign in failed.' };
+  }
+}
+
+export async function resendVerificationCode(email: string): Promise<{ error?: string; success?: boolean }> {
+  const client = getSupabaseClient();
+  if (!client) return { error: 'Supabase not connected' };
+  try {
+    const { error } = await client.auth.resend({
+      type: 'signup',
+      email: email.trim().toLowerCase()
+    });
+    if (error) return { error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || 'Failed to resend code' };
   }
 }
 
