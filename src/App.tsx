@@ -12,7 +12,7 @@ import { getCurrentUser, signOutUser, getSupabaseClient } from './services/supab
 import { PenTool, Heart } from 'lucide-react';
 
 export function App() {
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
   const [activeTab, setActiveTab] = useState<'home' | 'discover' | 'pad' | 'streak'>('home');
   const [user, setUser] = useState<UserProfile | null>(null);
 
@@ -92,7 +92,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 text-slate-100 flex flex-col font-sans selection:bg-brand-purple/30 selection:text-white">
+    <div className="min-h-screen bg-[#0B0E14] text-slate-100 flex flex-col font-sans selection:bg-[#00E5FF]/20 selection:text-white">
       
       {/* Top Navigation Bar with Tabs & Sign In button */}
       <Navbar

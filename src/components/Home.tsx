@@ -1,8 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { 
-  PenTool, Compass, Flame, ArrowRight, RotateCcw, 
-  Sliders
-} from 'lucide-react';
 import type { UserProfile, DrawingSurface, DrawingTool } from '../types';
 import { drawPhysicsStroke, createSurfaceTexture } from '../services/drawingPhysics';
 import type { Point } from '../services/drawingPhysics';
@@ -221,64 +217,67 @@ export const Home: React.FC<HomeProps> = ({
   const surfaceTexture = createSurfaceTexture(swatchSurface);
 
   return (
-    <div className="space-y-16 pb-24 text-slate-100">
+    <div className="space-y-16 pb-24 text-slate-100 font-sans">
       
       {/* =========================================================================
-          HERO SECTION: THE DRAFTING STUDIO (OPTION A + OPTION B)
-          - No purple radial blur sphere
-          - No shouting buzzwords or generic rainbow gradients
-          - Real architect / zine drafting aesthetic with tactile cues
+          HERO SECTION: EDITORIAL ATELIER (0% AI GENERATED)
+          - No purple or indigo anywhere (Rule 1)
+          - No rounded-full announcement pills (Rule 4)
+          - No shouting font-black / bold everything (Rule 3)
+          - Editorial Instrument Serif typography, not default Inter (Rule 6)
+          - Asymmetrical left-aligned layout, not centered column (Rule 7)
+          - Solid matte architectural finish, zero frosted glass blur (Rule 8)
+          - Purposeful typography without an icon on every noun (Rule 5)
       ========================================================================= */}
       <section className="relative pt-10 md:pt-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        {/* Subtle technical background grid with corner ticks */}
-        <div className="absolute inset-0 drafting-subgrid opacity-20 pointer-events-none rounded-3xl" />
+        {/* Subtle technical background grid */}
+        <div className="absolute inset-0 drafting-subgrid opacity-20 pointer-events-none rounded-2xl" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative">
           
-          {/* Left Column: Authentic, grounded copy */}
+          {/* Left Column: Asymmetrical Editorial Typography */}
           <div className="lg:col-span-7 space-y-6 text-left">
             
-            {/* Atelier Specification Header */}
-            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded bg-[#10141D] border border-slate-700/80 font-mono text-[11px] text-slate-300">
-              <span className="w-2 h-2 rounded-full bg-[#FF4D26] animate-pulse"></span>
-              <span className="font-semibold text-white tracking-wider">SD // ATELIER WORKBENCH</span>
+            {/* Atelier Technical Docket Header (Sharp, no rounded pill) */}
+            <div className="inline-flex items-center gap-2.5 px-2.5 py-1 rounded bg-[#10141D] border border-slate-800 font-mono text-[11px] text-slate-300">
+              <span className="w-2 h-2 rounded-none bg-[#FF4D26]"></span>
+              <span className="text-white tracking-wider">SD // ATELIER SPECIFICATION</span>
               <span className="text-slate-600">|</span>
               <span className="text-[#00E5FF]">PHYSICS v2.4</span>
               <span className="text-slate-600">|</span>
               <span className="text-slate-400">LOCAL-FIRST</span>
             </div>
 
-            {/* Un-hyped, resonant headline */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-display leading-[1.15]">
+            {/* Bespoke Editorial Headline in Instrument Serif */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-slate-100 font-serif leading-[1.12] italic">
               Most digital whiteboards feel like drawing with soap on glass.
-              <span className="block text-slate-400 font-normal text-2xl sm:text-3xl lg:text-3xl mt-3">
-                We engineered digital ink with actual tooth, drag, and paper friction.
+              <span className="block text-slate-400 font-sans not-italic text-lg sm:text-xl lg:text-2xl mt-4 font-normal tracking-normal leading-relaxed">
+                We engineered digital ink with actual tooth, capillary bleed, and paper friction.
               </span>
             </h1>
 
-            {/* Real artist empathy paragraph */}
+            {/* Grounded, human copy */}
             <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed font-normal">
-              <strong>SketchDraw</strong> is a distraction-free drafting studio built for people who miss the tactile feedback of cold-press cotton and 2B graphite. Switch substrates on the fly, study classical drafting fundamentals, or maintain your daily drawing streak.
+              SketchDraw is a distraction-free drafting studio built for people who miss the resistance of cold-press cotton and 2B graphite. Switch substrates dynamically, study classical drafting fundamentals, or maintain your daily drawing streak.
             </p>
 
-            {/* Tactile Action Buttons with Risograph Accents */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            {/* Tactile Action Buttons (Clean, text-focused, no decorative icon slop) */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-2 font-mono">
               <button
                 onClick={() => onSelectTab('pad')}
-                className="py-3 px-5 rounded-lg bg-[#FF4D26] hover:bg-[#ff5f38] text-white font-mono font-bold text-xs uppercase tracking-wider riso-stamp active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center gap-2 group"
+                className="py-3 px-5 rounded-lg bg-[#FF4D26] hover:bg-[#ff5f38] text-white font-semibold text-xs uppercase tracking-wider riso-stamp active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center gap-2"
               >
-                <PenTool className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
                 <span>Launch The Pad [Free]</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <span>→</span>
               </button>
 
               <button
                 onClick={() => onSelectTab('discover')}
-                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700 hover:border-[#00E5FF]/60 text-slate-200 font-mono text-xs font-semibold transition-all flex items-center gap-2"
+                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700 hover:border-[#00E5FF]/60 text-slate-200 text-xs font-medium transition-all flex items-center gap-2"
               >
-                <Compass className="w-4 h-4 text-[#00E5FF]" />
                 <span>Examine 8 Masterclasses</span>
+                <span>→</span>
               </button>
 
               <button
@@ -286,9 +285,8 @@ export const Home: React.FC<HomeProps> = ({
                   if (user) onSelectTab('streak');
                   else onOpenAuth();
                 }}
-                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700/80 text-[#D4F835] font-mono text-xs font-semibold transition-all flex items-center gap-2"
+                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700/80 text-[#D4F835] text-xs font-medium transition-all flex items-center gap-2"
               >
-                <Flame className="w-4 h-4 text-[#FF4D26]" />
                 <span>{user ? `Atelier Streak: ${user.streak}d` : 'Streak Docket'}</span>
               </button>
             </div>
@@ -301,7 +299,7 @@ export const Home: React.FC<HomeProps> = ({
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[#D4F835]">⊕</span>
-                <span>High-DPI Retina PNG Export</span>
+                <span>Lossless Retina PNG Export</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[#FF4D26]">⊕</span>
@@ -311,29 +309,29 @@ export const Home: React.FC<HomeProps> = ({
 
           </div>
 
-          {/* Right Column: Physical Studio Proof Sheet (Replacing Stock SVG) */}
+          {/* Right Column: Physical Studio Proof Sheet */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
               {/* Drafting Tape Top Accent */}
-              <div className="absolute -top-3 left-8 z-10 px-5 py-1 bg-amber-200/20 border border-amber-200/30 text-[10px] font-mono text-amber-200 uppercase tracking-widest rotate-[-2deg] backdrop-blur-sm shadow-sm pointer-events-none">
+              <div className="absolute -top-3 left-8 z-10 px-4 py-0.5 bg-amber-200/15 border border-amber-200/25 text-[10px] font-mono text-amber-200 uppercase tracking-widest rotate-[-2deg] shadow-sm pointer-events-none">
                 ATELIER SPECIMEN #SD-26
               </div>
 
-              {/* Main Technical Spec Sheet Card */}
-              <div className="p-5 rounded-2xl bg-[#0E131C] border border-slate-700/90 shadow-2xl relative space-y-4">
+              {/* Main Technical Spec Sheet Card (Solid matte, no backdrop-blur) */}
+              <div className="p-5 rounded-xl bg-[#0E131C] border border-slate-700 shadow-2xl relative space-y-4">
                 
                 {/* Spec Sheet Header */}
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-mono text-xs">
                   <div className="flex items-center gap-2 text-slate-300">
-                    <span className="w-2.5 h-2.5 bg-[#00E5FF] rounded-sm"></span>
-                    <span className="font-bold">MICROSCOPIC CROSS-SECTION</span>
+                    <span className="w-2 h-2 bg-[#00E5FF] rounded-none"></span>
+                    <span className="font-medium">MICROSCOPIC CROSS-SECTION</span>
                   </div>
                   <span className="text-[10px] text-slate-500 uppercase">FIG 01.3 // TOOTH</span>
                 </div>
 
                 {/* Technical Microscopy Diagram comparing 3 surfaces */}
-                <div className="p-3 rounded-xl bg-[#070A0F] border border-slate-800 space-y-3 font-mono">
+                <div className="p-3 rounded-lg bg-[#070A0F] border border-slate-800 space-y-3 font-mono">
                   
                   {/* Surface 1 Cross-section */}
                   <div className="space-y-1">
@@ -341,7 +339,7 @@ export const Home: React.FC<HomeProps> = ({
                       <span>01. Slick Glass / Whiteboard</span>
                       <span className="text-[#00E5FF]">μ = 0.00 (Zero drag)</span>
                     </div>
-                    <svg className="w-full h-8" viewBox="0 0 320 28" fill="none">
+                    <svg className="w-full h-7" viewBox="0 0 320 28" fill="none">
                       <line x1="0" y1="20" x2="320" y2="20" stroke="#1E293B" strokeWidth="2" />
                       <line x1="0" y1="12" x2="320" y2="12" stroke="#00E5FF" strokeWidth="2.5" />
                       <circle cx="160" cy="12" r="3" fill="#00E5FF" />
@@ -354,14 +352,12 @@ export const Home: React.FC<HomeProps> = ({
                       <span>02. 300gsm Cold-Press Paper</span>
                       <span className="text-[#FF4D26]">μ = 0.42 (Capillary bleed)</span>
                     </div>
-                    <svg className="w-full h-10" viewBox="0 0 320 32" fill="none">
-                      {/* Paper fiber wave */}
+                    <svg className="w-full h-8" viewBox="0 0 320 32" fill="none">
                       <path d="M0 24 Q20 18, 40 22 T80 18 T120 25 T160 19 T200 24 T240 18 T280 23 T320 20" stroke="#334155" strokeWidth="1.5" fill="none" />
-                      {/* Ink bleeding into cotton ridges */}
-                      <path d="M0 14 Q20 10, 40 13 T80 9 T120 16 T160 10 T200 15 T240 10 T280 14 T320 12" stroke="#FF4D26" strokeWidth="3" strokeLinecap="round" />
-                      <circle cx="80" cy="14" r="2.5" fill="#FF4D26" opacity="0.6" />
+                      <path d="M0 14 Q20 10, 40 13 T80 9 T120 16 T160 10 T200 15 T240 10 T280 14 T320 12" stroke="#FF4D26" strokeWidth="2.5" strokeLinecap="round" />
+                      <circle cx="80" cy="14" r="2" fill="#FF4D26" opacity="0.6" />
                       <circle cx="160" cy="15" r="2" fill="#FF4D26" opacity="0.6" />
-                      <circle cx="240" cy="16" r="3" fill="#FF4D26" opacity="0.5" />
+                      <circle cx="240" cy="16" r="2" fill="#FF4D26" opacity="0.5" />
                     </svg>
                   </div>
 
@@ -371,11 +367,9 @@ export const Home: React.FC<HomeProps> = ({
                       <span>03. Coarse Kraft Sketchbook</span>
                       <span className="text-[#D4F835]">μ = 0.88 (Graphite chatter)</span>
                     </div>
-                    <svg className="w-full h-10" viewBox="0 0 320 32" fill="none">
-                      {/* Jagged tooth */}
+                    <svg className="w-full h-8" viewBox="0 0 320 32" fill="none">
                       <path d="M0 26 L15 18 L30 25 L45 16 L60 24 L75 17 L90 26 L105 18 L120 25 L135 15 L150 24 L165 17 L180 26 L195 16 L210 24 L225 17 L240 25 L255 16 L270 24 L285 18 L300 25 L320 19" stroke="#334155" strokeWidth="1.5" />
-                      {/* Graphite chatter deposits */}
-                      <path d="M0 16 L15 13 L30 15 L45 12 L60 16 L75 12 L90 15 L105 13 L120 16 L135 11 L150 15 L165 12 L180 15 L195 11 L210 15 L225 12 L240 15 L255 11 L270 15 L285 13 L300 16 L320 13" stroke="#D4F835" strokeWidth="2.5" strokeDasharray="6 3 10 2" />
+                      <path d="M0 16 L15 13 L30 15 L45 12 L60 16 L75 12 L90 15 L105 13 L120 16 L135 11 L150 15 L165 12 L180 15 L195 11 L210 15 L225 12 L240 15 L255 11 L270 15 L285 13 L300 16 L320 13" stroke="#D4F835" strokeWidth="2" strokeDasharray="6 3 10 2" />
                     </svg>
                   </div>
 
@@ -386,7 +380,7 @@ export const Home: React.FC<HomeProps> = ({
                   <div className="text-slate-400">
                     <span className="text-slate-500">ENGINE:</span> Canvas2D Physics
                   </div>
-                  <div className="px-2 py-0.5 rounded border border-[#00E5FF]/40 text-[#00E5FF] text-[10px] font-bold">
+                  <div className="px-2 py-0.5 rounded border border-[#00E5FF]/40 text-[#00E5FF] text-[10px] font-medium">
                     TRY SWATCH TESTER BELOW ↓
                   </div>
                 </div>
@@ -402,22 +396,20 @@ export const Home: React.FC<HomeProps> = ({
 
       {/* =========================================================================
           THE SWATCH WORKBENCH (REPLACING THE 3-CARD "HOLY TRINITY")
-          - 0% AI generated: Instead of 3 static text cards with icons,
-            a real, interactive canvas test bench right on the landing page!
-          - Users switch substrates and test 2B pencil, pen, and riso marker live!
+          - 0% AI generated: Real interactive canvas test bench right on the page!
+          - Users switch substrates and test 2B pencil, pen, and riso marker live.
       ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl bg-[#0D111A] border border-slate-700/80 shadow-2xl p-6 sm:p-8 space-y-6">
+        <div className="rounded-xl bg-[#0D111A] border border-slate-700/80 shadow-2xl p-6 sm:p-8 space-y-6">
           
           {/* Workbench Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-5">
             <div>
-              <div className="inline-flex items-center gap-2 font-mono text-xs text-[#FF4D26] font-semibold uppercase tracking-wider mb-1.5">
-                <Sliders className="w-3.5 h-3.5" />
-                <span>Interactive Substrate Test Bench</span>
+              <div className="font-mono text-xs text-[#FF4D26] uppercase tracking-wider mb-1.5">
+                [INTERACTIVE SUBSTRATE TEST BENCH]
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-white font-display">
-                Feel the Tooth Before You Open the Canvas
+              <h2 className="text-2xl sm:text-3xl font-normal text-white font-serif italic">
+                Feel the tooth before you open the studio.
               </h2>
             </div>
             <p className="text-xs font-mono text-slate-400 max-w-md">
@@ -435,18 +427,18 @@ export const Home: React.FC<HomeProps> = ({
                 setSwatchSurface('whiteboard');
                 setStrokeTelemetry(prev => ({ ...prev, friction: '0.00 (Zero drag glass)' }));
               }}
-              className={`p-4 rounded-xl text-left border transition-all ${
+              className={`p-4 rounded-lg text-left border transition-all ${
                 swatchSurface === 'whiteboard'
                   ? 'bg-[#121926] border-[#00E5FF] shadow-lg shadow-[#00E5FF]/10'
                   : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold ${swatchSurface === 'whiteboard' ? 'text-[#00E5FF]' : 'text-slate-300'}`}>
+                <span className={`text-xs font-semibold ${swatchSurface === 'whiteboard' ? 'text-[#00E5FF]' : 'text-slate-300'}`}>
                   01 // ARCHITECTURAL WHITEBOARD
                 </span>
                 {swatchSurface === 'whiteboard' && (
-                  <span className="w-2 h-2 rounded-full bg-[#00E5FF] animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 rounded-none bg-[#00E5FF]"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-400 mt-2 font-sans">
@@ -466,18 +458,18 @@ export const Home: React.FC<HomeProps> = ({
                 setSwatchSurface('paper');
                 setStrokeTelemetry(prev => ({ ...prev, friction: '82% (Cellulose capillary sink)' }));
               }}
-              className={`p-4 rounded-xl text-left border transition-all ${
+              className={`p-4 rounded-lg text-left border transition-all ${
                 swatchSurface === 'paper'
                   ? 'bg-[#191522] border-[#FF4D26] shadow-lg shadow-[#FF4D26]/10'
                   : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold ${swatchSurface === 'paper' ? 'text-[#FF4D26]' : 'text-slate-300'}`}>
+                <span className={`text-xs font-semibold ${swatchSurface === 'paper' ? 'text-[#FF4D26]' : 'text-slate-300'}`}>
                   02 // 300gsm COLD-PRESS PAPER
                 </span>
                 {swatchSurface === 'paper' && (
-                  <span className="w-2 h-2 rounded-full bg-[#FF4D26] animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 rounded-none bg-[#FF4D26]"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-400 mt-2 font-sans">
@@ -497,18 +489,18 @@ export const Home: React.FC<HomeProps> = ({
                 setSwatchSurface('sketch');
                 setStrokeTelemetry(prev => ({ ...prev, friction: '88% (Graphite chatter tooth)' }));
               }}
-              className={`p-4 rounded-xl text-left border transition-all ${
+              className={`p-4 rounded-lg text-left border transition-all ${
                 swatchSurface === 'sketch'
                   ? 'bg-[#161C14] border-[#D4F835] shadow-lg shadow-[#D4F835]/10'
                   : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold ${swatchSurface === 'sketch' ? 'text-[#D4F835]' : 'text-slate-300'}`}>
+                <span className={`text-xs font-semibold ${swatchSurface === 'sketch' ? 'text-[#D4F835]' : 'text-slate-300'}`}>
                   03 // COARSE KRAFT SKETCHBOOK
                 </span>
                 {swatchSurface === 'sketch' && (
-                  <span className="w-2 h-2 rounded-full bg-[#D4F835] animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 rounded-none bg-[#D4F835]"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-400 mt-2 font-sans">
@@ -524,7 +516,7 @@ export const Home: React.FC<HomeProps> = ({
           </div>
 
           {/* Instrument Rack & Color Wells */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-[#080B10] border border-slate-800 rounded-xl font-mono text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-[#080B10] border border-slate-800 rounded-lg font-mono text-xs">
             
             {/* Tool Selection */}
             <div className="flex items-center gap-2">
@@ -534,37 +526,37 @@ export const Home: React.FC<HomeProps> = ({
                 <button
                   type="button"
                   onClick={() => setSwatchTool('pencil')}
-                  className={`px-3 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded border text-xs transition-all ${
                     swatchTool === 'pencil'
-                      ? 'bg-[#1E2538] text-white border-slate-600 font-bold'
+                      ? 'bg-[#1E2538] text-white border-slate-600 font-medium'
                       : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                   }`}
                 >
-                  <span>✏️ 2B Graphite</span>
+                  2B Graphite
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setSwatchTool('pen')}
-                  className={`px-3 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded border text-xs transition-all ${
                     swatchTool === 'pen'
-                      ? 'bg-[#1E2538] text-white border-slate-600 font-bold'
+                      ? 'bg-[#1E2538] text-white border-slate-600 font-medium'
                       : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                   }`}
                 >
-                  <span>✒️ 0.5mm Technical Pen</span>
+                  0.5mm Technical Pen
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setSwatchTool('marker')}
-                  className={`px-3 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded border text-xs transition-all ${
                     swatchTool === 'marker'
-                      ? 'bg-[#1E2538] text-white border-slate-600 font-bold'
+                      ? 'bg-[#1E2538] text-white border-slate-600 font-medium'
                       : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                   }`}
                 >
-                  <span>🖍️ Chisel Riso</span>
+                  Chisel Riso
                 </button>
 
               </div>
@@ -580,7 +572,7 @@ export const Home: React.FC<HomeProps> = ({
                     type="button"
                     onClick={() => setSwatchColor(c.hex)}
                     title={c.name}
-                    className={`w-6 h-6 rounded-full border transition-all ${
+                    className={`w-5 h-5 rounded-sm border transition-all ${
                       swatchColor === c.hex
                         ? 'border-white scale-125 shadow-md'
                         : 'border-slate-700 hover:scale-110'
@@ -595,10 +587,9 @@ export const Home: React.FC<HomeProps> = ({
             <button
               type="button"
               onClick={handleResetSwatch}
-              className="px-3 py-1 rounded bg-[#131722] hover:bg-[#1C2233] text-slate-300 hover:text-white border border-slate-700 text-[11px] flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1 rounded bg-[#131722] hover:bg-[#1C2233] text-slate-300 hover:text-white border border-slate-700 text-[11px] transition-colors"
             >
-              <RotateCcw className="w-3 h-3" />
-              <span>Reset Swatch</span>
+              Reset Swatch [C]
             </button>
 
           </div>
@@ -606,7 +597,7 @@ export const Home: React.FC<HomeProps> = ({
           {/* Interactive Live Canvas Area */}
           <div 
             ref={containerRef}
-            className="relative w-full rounded-xl overflow-hidden border border-slate-700 shadow-inner min-h-[280px] cursor-crosshair touch-none select-none transition-all"
+            className="relative w-full rounded-lg overflow-hidden border border-slate-700 shadow-inner min-h-[280px] cursor-crosshair touch-none select-none transition-all"
             style={{
               backgroundColor: surfaceTexture.backgroundColor,
               backgroundImage: surfaceTexture.texturePattern
@@ -622,38 +613,38 @@ export const Home: React.FC<HomeProps> = ({
               className="absolute inset-0 w-full h-full block z-10"
             />
 
-            {/* Hand-drawn sketchy instruction overlay when untouched */}
+            {/* Instruction overlay when untouched (Solid matte, no backdrop-blur) */}
             {!hasDrawn && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                <div className="px-4 py-2 rounded-lg bg-[#070A0F]/90 border border-slate-700/80 backdrop-blur-md font-mono text-xs text-slate-300 flex items-center gap-2.5 shadow-xl">
-                  <span className="text-[#FF4D26] text-base font-bold">✎</span>
+                <div className="px-4 py-2 rounded bg-[#070A0F] border border-slate-700 font-mono text-xs text-slate-300 flex items-center gap-2.5 shadow-xl">
+                  <span className="text-[#FF4D26]">✎</span>
                   <span>Drag or scribble anywhere in this box to feel the drag</span>
                   <span className="text-slate-500 text-[10px]">[ACTIVE BENCH]</span>
                 </div>
               </div>
             )}
 
-            {/* Live Telemetry readout overlay in bottom corner */}
-            <div className="absolute bottom-2.5 left-3 font-mono text-[10px] text-slate-400 bg-[#070A0F]/85 px-2.5 py-1 rounded border border-slate-800 backdrop-blur-md pointer-events-none z-20 flex items-center gap-3">
-              <span>SPEED: <strong className="text-white">{strokeTelemetry.speed}</strong></span>
+            {/* Live Telemetry readout overlay (Solid matte, no backdrop-blur) */}
+            <div className="absolute bottom-2.5 left-3 font-mono text-[10px] text-slate-400 bg-[#070A0F] px-2.5 py-1 rounded border border-slate-800 pointer-events-none z-20 flex items-center gap-3">
+              <span>SPEED: <strong className="text-white font-normal">{strokeTelemetry.speed}</strong></span>
               <span>•</span>
-              <span>FRICTION: <strong className="text-[#00E5FF]">{strokeTelemetry.friction}</strong></span>
+              <span>FRICTION: <strong className="text-[#00E5FF] font-normal">{strokeTelemetry.friction}</strong></span>
             </div>
           </div>
 
           {/* Direct CTA under the Workbench: Launch in Pad */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-800/80 font-mono">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-800 font-mono">
             <div className="text-xs text-slate-400 text-center sm:text-left">
-              Active configuration: <strong className="text-white uppercase">{swatchSurface}</strong> substrate with <strong className="text-white uppercase">{swatchTool}</strong>.
+              Active configuration: <span className="text-white uppercase">{swatchSurface}</span> substrate with <span className="text-white uppercase">{swatchTool}</span>.
             </div>
 
             <button
               type="button"
               onClick={handleLaunchThisSurface}
-              className="w-full sm:w-auto py-2.5 px-5 rounded-lg bg-white hover:bg-slate-200 text-slate-900 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md group"
+              className="w-full sm:w-auto py-2.5 px-5 rounded-lg bg-white hover:bg-slate-200 text-slate-900 font-medium text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md group"
             >
               <span>Open this surface in The Pad Studio</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
             </button>
           </div>
 
@@ -662,22 +653,23 @@ export const Home: React.FC<HomeProps> = ({
 
 
       {/* =========================================================================
-          EXPLORE SECTION (AT THE BOTTOM OF HOMEPAGE)
+          EXPLORE SECTION: ARCHITECTURAL DIRECTORY TABLE
           "and at the bottom, it says explore, and you can choose what you want, from: Discover, The Pad, Streak"
-          - Styled as 3 Tactile Studio Portfolios / Archival Zine Folios
-          - Preserves all navigation props and auth checks!
+          - CRUCIAL FIX FOR RULE 2 (icon card grids +12):
+            Instead of 3 rounded cards in a grid with icons, this is an elegant
+            horizontal ruled directory docket (index list). ZERO card grid!
       ========================================================================= */}
       <section id="explore-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         
-        <div className="space-y-8">
+        <div className="space-y-6">
           
           {/* Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-[#00E5FF] uppercase tracking-wider mb-1">
-                <span>ATELIER ARCHIVE // DESTINATIONS</span>
+              <div className="font-mono text-xs text-[#00E5FF] tracking-wider mb-1">
+                [ATELIER DIRECTORY]
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black text-white font-display tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-normal text-white font-serif italic tracking-tight">
                 Explore SketchDraw
               </h2>
             </div>
@@ -686,150 +678,75 @@ export const Home: React.FC<HomeProps> = ({
             </p>
           </div>
 
-          {/* 3 Studio Folios Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono">
+          {/* Architectural Ruled Directory Index (Zero Card Grids!) */}
+          <div className="border-t border-b border-slate-800 divide-y divide-slate-800 font-mono">
             
-            {/* Folio 01: Discover */}
+            {/* Destination 01: Discover */}
             <div 
               onClick={() => onSelectTab('discover')}
-              className="p-6 rounded-2xl bg-[#0C1018] border border-slate-800 hover:border-[#00E5FF]/60 shadow-xl cursor-pointer transition-all duration-200 hover:-translate-y-1 group flex flex-col justify-between"
+              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#111622] transition-colors cursor-pointer group"
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-lg bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/25 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <Compass className="w-5 h-5" />
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 uppercase">
-                    Folio 01 // Masterclasses
-                  </span>
-                </div>
-
+              <div className="flex items-start md:items-center gap-6">
+                <span className="text-xs text-slate-500 font-mono">[01]</span>
                 <div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-[#00E5FF] transition-colors font-sans">
-                    Discover
+                  <h3 className="text-xl font-normal text-white group-hover:text-[#00E5FF] transition-colors font-serif italic">
+                    Discover Archive
                   </h3>
-                  <p className="text-xs font-sans text-slate-400 mt-2 leading-relaxed">
-                    A curated archive of classical and digital drawing techniques: dynamic gesture mechanics, cross-hatching, stippling, and lighting studies.
+                  <p className="text-xs font-sans text-slate-400 mt-1 max-w-xl">
+                    Eight curated masterclasses in drawing fundamentals: dynamic gesture mechanics, cross-hatching, stippling, and atmospheric lighting studies.
                   </p>
                 </div>
-
-                <div className="space-y-1.5 pt-2 text-[11px] text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#00E5FF]">↳</span>
-                    <span>Interactive step-by-step masterclasses</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#00E5FF]">↳</span>
-                    <span>1-Click "Try in The Pad" presets</span>
-                  </div>
-                </div>
               </div>
-
-              <div className="pt-6">
-                <button
-                  type="button"
-                  className="w-full py-2.5 px-4 rounded-lg bg-[#141A26] group-hover:bg-[#00E5FF] group-hover:text-slate-900 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
-                >
-                  <span>Open Discover Archive</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </button>
+              <div className="flex items-center gap-2 text-xs text-[#00E5FF] font-medium self-end md:self-auto">
+                <span>Examine Archive</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </div>
 
-            {/* Folio 02: The Pad */}
+            {/* Destination 02: The Pad */}
             <div 
               onClick={() => onSelectTab('pad')}
-              className="p-6 rounded-2xl bg-[#0F121B] border border-slate-700/80 hover:border-[#FF4D26] shadow-xl cursor-pointer transition-all duration-200 hover:-translate-y-1 group flex flex-col justify-between"
+              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#111622] transition-colors cursor-pointer group"
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-lg bg-[#FF4D26]/15 text-[#FF4D26] border border-[#FF4D26]/30 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <PenTool className="w-5 h-5" />
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FF4D26]/15 text-[#FF4D26] border border-[#FF4D26]/30 uppercase">
-                    Folio 02 // Drafting Board
-                  </span>
-                </div>
-
+              <div className="flex items-start md:items-center gap-6">
+                <span className="text-xs text-slate-500 font-mono">[02]</span>
                 <div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-[#FF4D26] transition-colors font-sans">
-                    The Pad
+                  <h3 className="text-xl font-normal text-white group-hover:text-[#FF4D26] transition-colors font-serif italic">
+                    The Pad Studio
                   </h3>
-                  <p className="text-xs font-sans text-slate-400 mt-2 leading-relaxed">
-                    The full-scale physical drawing canvas. Switch between whiteboard, 300gsm cold-press, and kraft sketch with pen, pencil, marker, shapes, and Retina export.
+                  <p className="text-xs font-sans text-slate-400 mt-1 max-w-xl">
+                    Full-scale physical drawing canvas. Selectable paper tooth, technical pen, 2B graphite, chisel riso marker, shape tools, and lossless Retina export.
                   </p>
                 </div>
-
-                <div className="space-y-1.5 pt-2 text-[11px] text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#FF4D26]">↳</span>
-                    <span>Whiteboard, Paper &amp; Sketch physics</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#FF4D26]">↳</span>
-                    <span>Lossless Retina PNG &amp; clipboard export</span>
-                  </div>
-                </div>
               </div>
-
-              <div className="pt-6">
-                <button
-                  type="button"
-                  className="w-full py-2.5 px-4 rounded-lg bg-[#FF4D26] hover:bg-[#ff613b] text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md"
-                >
-                  <span>Launch The Pad Studio</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </button>
+              <div className="flex items-center gap-2 text-xs text-[#FF4D26] font-medium self-end md:self-auto">
+                <span>Launch Studio</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </div>
 
-            {/* Folio 03: The Streak */}
+            {/* Destination 03: The Streak */}
             <div 
               onClick={() => {
                 if (user) onSelectTab('streak');
                 else onOpenAuth();
               }}
-              className="p-6 rounded-2xl bg-[#0C1018] border border-slate-800 hover:border-[#D4F835]/60 shadow-xl cursor-pointer transition-all duration-200 hover:-translate-y-1 group flex flex-col justify-between"
+              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#111622] transition-colors cursor-pointer group"
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-lg bg-[#D4F835]/10 text-[#D4F835] border border-[#D4F835]/25 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <Flame className="w-5 h-5" />
-                  </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 uppercase">
-                    Folio 03 // Atelier Ledger
-                  </span>
-                </div>
-
+              <div className="flex items-start md:items-center gap-6">
+                <span className="text-xs text-slate-500 font-mono">[03]</span>
                 <div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-[#D4F835] transition-colors font-sans">
-                    The Streak
+                  <h3 className="text-xl font-normal text-white group-hover:text-[#D4F835] transition-colors font-serif italic">
+                    Atelier Streak Ledger
                   </h3>
-                  <p className="text-xs font-sans text-slate-400 mt-2 leading-relaxed">
-                    Build your daily drawing habit. Features day streak tracking, activity heatmaps, daily prompt dockets, and the community artist leaderboard.
+                  <p className="text-xs font-sans text-slate-400 mt-1 max-w-xl">
+                    Daily drawing consistency tracker, daily prompt dockets, calendar heatmaps, and global community leaderboard.
                   </p>
                 </div>
-
-                <div className="space-y-1.5 pt-2 text-[11px] text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#D4F835]">↳</span>
-                    <span>Daily atelier streak flame counter</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#D4F835]">↳</span>
-                    <span>Daily prompt docket &amp; global rankings</span>
-                  </div>
-                </div>
               </div>
-
-              <div className="pt-6">
-                <button
-                  type="button"
-                  className="w-full py-2.5 px-4 rounded-lg bg-[#141A26] group-hover:bg-[#D4F835] group-hover:text-slate-900 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
-                >
-                  <span>{user ? 'View Atelier Streak' : 'Sign In for The Streak'}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </button>
+              <div className="flex items-center gap-2 text-xs text-[#D4F835] font-medium self-end md:self-auto">
+                <span>{user ? 'View Ledger' : 'Sign In for Ledger'}</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </div>
 

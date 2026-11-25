@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import confetti from 'canvas-confetti';
-import { PenTool, Sparkles, ArrowRight } from 'lucide-react';
+import { PenTool, ArrowRight } from 'lucide-react';
 
 interface OpeningIntroProps {
   onComplete: () => void;
@@ -18,29 +18,29 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
   const triggerRipAndExit = useCallback(() => {
     setPhase('ripping');
 
-    // Explosive rainbow particle confetti burst
+    // Explosive drafting riso confetti burst
     confetti({
-      particleCount: 80,
-      spread: 100,
+      particleCount: 70,
+      spread: 90,
       origin: { y: 0.5, x: 0.5 },
-      colors: ['#EC4899', '#8B5CF6', '#06B6D4', '#F59E0B', '#10B981']
+      colors: ['#FF4D26', '#00E5FF', '#D4F835', '#FFFFFF']
     });
 
     // Secondary side cannons for maximum visual impact
     setTimeout(() => {
       confetti({
-        particleCount: 45,
+        particleCount: 35,
         angle: 60,
-        spread: 55,
+        spread: 50,
         origin: { x: 0, y: 0.6 },
-        colors: ['#EC4899', '#06B6D4']
+        colors: ['#FF4D26', '#00E5FF']
       });
       confetti({
-        particleCount: 45,
+        particleCount: 35,
         angle: 120,
-        spread: 55,
+        spread: 50,
         origin: { x: 1, y: 0.6 },
-        colors: ['#8B5CF6', '#EC4899']
+        colors: ['#D4F835', '#FF4D26']
       });
     }, 150);
 
@@ -67,7 +67,7 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
 
     // Ambient floating embers
     const embers: { x: number; y: number; r: number; color: string; vx: number; vy: number; alpha: number }[] = [];
-    const colors = ['#EC4899', '#8B5CF6', '#06B6D4', '#3B82F6'];
+    const colors = ['#FF4D26', '#00E5FF', '#D4F835', '#FFFFFF'];
     for (let i = 0; i < 40; i++) {
       embers.push({
         x: Math.random() * width,
@@ -194,16 +194,15 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
       if (stroke.length > 1) {
         ctx.save();
         const strokeGrad = ctx.createLinearGradient(0, 0, width, height);
-        strokeGrad.addColorStop(0, '#EC4899');
-        strokeGrad.addColorStop(0.5, '#8B5CF6');
-        strokeGrad.addColorStop(1, '#06B6D4');
+        strokeGrad.addColorStop(0, '#FF4D26');
+        strokeGrad.addColorStop(1, '#00E5FF');
 
         ctx.strokeStyle = strokeGrad;
-        ctx.lineWidth = 7;
+        ctx.lineWidth = 5;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.shadowBlur = 24;
-        ctx.shadowColor = '#06B6D4';
+        ctx.shadowBlur = 16;
+        ctx.shadowColor = '#00E5FF';
 
         ctx.beginPath();
         ctx.moveTo(stroke[0].x, stroke[0].y);
@@ -288,35 +287,35 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
           }}
           className="absolute -top-6 -left-2 pointer-events-none z-20 flex items-center gap-1 animate-pulse"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-brand-pink via-brand-purple to-brand-cyan p-0.5 shadow-lg shadow-brand-cyan/50 -rotate-45">
-            <div className="w-full h-full bg-dark-900 rounded-full flex items-center justify-center">
-              <PenTool className="w-4 h-4 text-brand-cyan" />
+          <div className="w-7 h-7 rounded-lg bg-[#FF4D26] p-0.5 shadow-lg shadow-[#FF4D26]/30 -rotate-45">
+            <div className="w-full h-full bg-[#0B0E14] rounded-md flex items-center justify-center">
+              <PenTool className="w-3.5 h-3.5 text-[#00E5FF]" />
             </div>
           </div>
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-ping opacity-75"></span>
+          <span className="w-2 h-2 rounded-sm bg-[#00E5FF] animate-ping opacity-75"></span>
         </div>
       )}
 
       {/* Center Title & Slogan (Fades in smoothly) */}
       <div className="absolute inset-x-0 top-[56%] flex flex-col items-center justify-center text-center px-4 pointer-events-none">
-        <h1 className="text-4xl sm:text-6xl font-black tracking-tight font-display gradient-text-rainbow drop-shadow-[0_10px_25px_rgba(139,92,246,0.35)] animate-fadeIn">
+        <h1 className="text-4xl sm:text-6xl font-normal tracking-tight font-serif italic text-white drop-shadow animate-fadeIn">
           SketchDraw
         </h1>
-        <p className="text-xs sm:text-sm uppercase tracking-[0.28em] text-slate-400 font-semibold mt-2.5 drop-shadow">
-          Digital Drawing &amp; Realistic Paper Physics
+        <p className="text-xs uppercase tracking-[0.25em] text-slate-400 font-mono mt-2 drop-shadow">
+          Tactile Drawing Studio &amp; Paper Physics
         </p>
 
         {/* Phase 3 Interactive Prompt */}
         {phase === 'ready_to_slash' && (
           <div className="mt-8 flex flex-col items-center gap-2 animate-bounce">
-            <div className="px-5 py-2.5 rounded-full bg-dark-800/90 border border-brand-cyan/40 backdrop-blur-md shadow-xl shadow-brand-cyan/15 flex items-center gap-2.5">
-              <Sparkles className="w-4 h-4 text-brand-cyan animate-spin" />
-              <span className="text-xs sm:text-sm font-bold text-white tracking-wide">
-                Swipe or Draw a Stroke to Enter
+            <div className="px-5 py-2.5 rounded-lg bg-[#111622] border border-slate-700 shadow-xl flex items-center gap-2.5 font-mono text-xs text-white">
+              <span className="text-[#00E5FF]">✎</span>
+              <span className="font-medium tracking-wide">
+                Draw or drag a stroke to enter
               </span>
-              <ArrowRight className="w-3.5 h-3.5 text-brand-pink" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#FF4D26]" />
             </div>
-            <span className="text-[10px] text-slate-500 font-medium">
+            <span className="text-[10px] text-slate-500 font-mono">
               Click &amp; drag anywhere on the canvas
             </span>
           </div>
@@ -329,7 +328,7 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
           e.stopPropagation();
           triggerRipAndExit();
         }}
-        className="absolute top-6 right-6 z-30 px-4 py-2 rounded-xl bg-dark-800/80 hover:bg-dark-700/90 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg active:scale-95 flex items-center gap-1.5"
+        className="absolute top-6 right-6 z-30 px-3.5 py-1.5 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700 text-slate-300 hover:text-white text-xs font-mono transition-all shadow-lg active:scale-95 flex items-center gap-1.5"
       >
         <span>Skip Intro</span>
         <span>&times;</span>

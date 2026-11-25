@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Flame, Compass, PenTool, User, LogOut, 
-  ChevronDown, CheckCircle2 
-} from 'lucide-react';
+import { LogOut, ChevronDown, CheckCircle2 } from 'lucide-react';
 import type { UserProfile } from '../types';
 
 interface NavbarProps {
@@ -23,81 +20,73 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-dark-900/85 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-[#0B0E14]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 font-mono">
         
-        {/* Left: Logo */}
+        {/* Left: Brand Identity */}
         <div 
           onClick={() => onSelectTab('home')}
-          className="flex items-center gap-2.5 cursor-pointer select-none group"
+          className="flex items-center gap-3 cursor-pointer select-none group"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-pink via-brand-purple to-brand-cyan p-0.5 shadow-lg shadow-brand-purple/20 group-hover:shadow-brand-purple/40 group-hover:scale-105 transition-all">
-            <div className="w-full h-full bg-dark-900 rounded-[10px] flex items-center justify-center">
-              <PenTool className="w-4 h-4 text-brand-cyan group-hover:rotate-12 transition-transform duration-300" />
-            </div>
+          <div className="w-8 h-8 rounded-lg bg-[#141A26] border border-slate-700 flex items-center justify-center font-mono font-bold text-xs text-[#00E5FF] group-hover:border-[#00E5FF] transition-colors">
+            SD
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-black tracking-tight gradient-text-rainbow font-display">
+            <span className="text-xl font-normal tracking-tight text-white font-serif italic">
               SketchDraw
             </span>
-            <span className="text-[10px] tracking-wider uppercase text-slate-400 font-semibold -mt-1">
-              Digital Drawing &amp; Physics
+            <span className="text-[9px] tracking-widest uppercase text-slate-500 font-mono -mt-0.5">
+              ATELIER DRAFTING v2.4
             </span>
           </div>
         </div>
 
-        {/* Center: Main Navigation Tabs (Instant access without scrolling down) */}
-        <nav className="flex items-center p-1 bg-dark-850/90 border border-slate-800 rounded-xl shadow-inner">
+        {/* Center: Main Navigation Tabs (Text-First, Zero Icon Slop) */}
+        <nav className="flex items-center p-1 bg-[#10141D] border border-slate-800 rounded-lg text-xs">
           <button
             onClick={() => onSelectTab('home')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-md transition-all ${
               activeTab === 'home'
-                ? 'bg-gradient-to-r from-brand-purple/20 to-brand-cyan/20 text-white border border-brand-purple/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'bg-[#182030] text-white font-medium border border-slate-700'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <span>Home</span>
+            Home
           </button>
 
           <button
             onClick={() => onSelectTab('discover')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-md transition-all ${
               activeTab === 'discover'
-                ? 'bg-gradient-to-r from-brand-cyan/20 to-brand-purple/20 text-brand-cyan border border-brand-cyan/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'bg-[#182030] text-[#00E5FF] font-medium border border-slate-700'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Discover</span>
+            Discover
           </button>
 
           <button
             onClick={() => onSelectTab('pad')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-md transition-all ${
               activeTab === 'pad'
-                ? 'bg-gradient-to-r from-brand-purple to-brand-pink text-white shadow-md shadow-brand-purple/30'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'bg-[#FF4D26] text-white font-semibold'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <PenTool className="w-3.5 h-3.5" />
-            <span>The Pad</span>
-            <span className="text-[9px] px-1.5 py-0.2 rounded bg-white/20 font-bold uppercase tracking-wider">
-              Canvas
-            </span>
+            The Pad
           </button>
 
           <button
             onClick={() => onSelectTab('streak')}
-            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-1.5 rounded-md transition-all flex items-center gap-1.5 ${
               activeTab === 'streak'
-                ? 'bg-gradient-to-r from-brand-orange/20 to-brand-yellow/20 text-brand-orange border border-brand-orange/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                ? 'bg-[#182030] text-[#D4F835] font-medium border border-slate-700'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Flame className={`w-3.5 h-3.5 ${user ? 'text-brand-orange animate-pulse' : ''}`} />
             <span>Streak</span>
             {user && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-brand-orange/20 text-brand-orange border border-brand-orange/30">
+              <span className="text-[10px] px-1 py-0.2 rounded bg-[#D4F835]/20 text-[#D4F835]">
                 {user.streak}d
               </span>
             )}
@@ -110,32 +99,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 py-1.5 px-2.5 rounded-xl bg-dark-800 hover:bg-dark-750 border border-slate-700/80 transition-all text-xs"
+                className="flex items-center gap-2 py-1.5 px-3 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700 text-xs"
               >
-                <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-brand-purple to-brand-cyan flex items-center justify-center text-xs font-bold text-white shadow">
-                  {user.avatarUrl && user.avatarUrl.length <= 4 ? user.avatarUrl : (user.name ? user.name[0].toUpperCase() : 'U')}
+                <div className="w-5 h-5 rounded bg-[#00E5FF]/20 text-[#00E5FF] flex items-center justify-center text-xs font-bold">
+                  {user.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
                 <div className="text-left hidden md:block">
-                  <div className="font-semibold text-white leading-tight flex items-center gap-1">
-                    <span>{user.name}</span>
-                    {user.isGuest && (
-                      <span className="text-[9px] px-1 py-0.2 rounded bg-slate-700 text-slate-300 font-normal">
-                        Guest
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-[10px] text-brand-orange font-medium flex items-center gap-0.5">
-                    <Flame className="w-2.5 h-2.5" />
-                    <span>{user.streak} day streak</span>
-                  </div>
+                  <span className="text-white font-medium">{user.name}</span>
                 </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-1" />
+                <ChevronDown className="w-3 h-3 text-slate-400 ml-1" />
               </button>
 
               {/* User Dropdown */}
               {dropdownOpen && (
                 <div 
-                  className="absolute right-0 mt-2 w-56 rounded-xl bg-dark-850 border border-slate-800 shadow-2xl p-1.5 z-50 animate-fadeIn"
+                  className="absolute right-0 mt-2 w-56 rounded-xl bg-[#0E131C] border border-slate-800 shadow-2xl p-1.5 z-50 animate-fadeIn"
                   onMouseLeave={() => setDropdownOpen(false)}
                 >
                   <div className="px-3 py-2 border-b border-slate-800 mb-1">
@@ -152,9 +130,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onSelectTab('streak');
                       setDropdownOpen(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-dark-800 flex items-center gap-2 transition-colors"
+                    className="w-full text-left px-3 py-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-[#151C2C] flex items-center gap-2 transition-colors"
                   >
-                    <Flame className="w-4 h-4 text-brand-orange" />
                     <span>My Streak &amp; Leaderboard</span>
                   </button>
 
@@ -167,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }}
                     className="w-full text-left px-3 py-2 rounded-lg text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
                   </button>
                 </div>
@@ -176,10 +153,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           ) : (
             <button
               onClick={onOpenAuth}
-              className="py-2 px-4 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan hover:brightness-110 text-white text-xs font-bold shadow-md shadow-brand-purple/20 active:scale-95 transition-all flex items-center gap-1.5"
+              className="py-1.5 px-3.5 rounded-lg bg-[#FF4D26] hover:bg-[#ff5d38] text-white text-xs font-semibold active:scale-95 transition-all"
             >
-              <User className="w-3.5 h-3.5" />
-              <span>Sign In</span>
+              Sign In
             </button>
           )}
 
