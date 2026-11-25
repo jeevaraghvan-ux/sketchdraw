@@ -446,8 +446,8 @@ export const Streak: React.FC<StreakProps> = ({
                       </span>
                     )}
                   </td>
-                  <td className="py-3 px-4 text-brand-orange font-bold">
-                    🔥 {entry.streak} days
+                  <td className="py-3 px-4 text-[#B85333] font-semibold">
+                    {entry.streak} days streak
                   </td>
                   <td className="py-3 px-4 text-slate-400">
                     {entry.totalDrawings} sketches

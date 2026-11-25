@@ -372,19 +372,19 @@ export const DAILY_PROMPTS_POOL: DailyPrompt[] = [
 
 export const INITIAL_LEADERBOARD = {
   allTime: [
-    { rank: 1, id: 'u-1', name: 'Aria Vance', avatar: '🎨', streak: 142, totalDrawings: 388, badge: 'Grandmaster' },
-    { rank: 2, id: 'u-2', name: 'Kai Takahashi', avatar: '⚡', streak: 118, totalDrawings: 295, badge: 'Ink Sorcerer' },
-    { rank: 3, id: 'u-3', name: 'Elena Rostova', avatar: '🌸', streak: 94, totalDrawings: 210, badge: 'Color Alchemist' },
-    { rank: 4, id: 'u-4', name: 'Marcus Chen', avatar: '🦊', streak: 87, totalDrawings: 194, badge: 'Gesture Titan' },
-    { rank: 5, id: 'u-5', name: 'Sora Kim', avatar: '🌙', streak: 76, totalDrawings: 152, badge: 'Night Inker' },
-    { rank: 6, id: 'u-6', name: 'Devon Reed', avatar: '🔥', streak: 63, totalDrawings: 140, badge: 'Daily Flame' },
-    { rank: 7, id: 'u-7', name: 'Zara Patel', avatar: '✨', streak: 51, totalDrawings: 112, badge: 'Sketch Pioneer' },
+    { rank: 1, id: 'u-1', name: 'Aria Vance', avatar: 'AV', streak: 142, totalDrawings: 388, badge: 'Grandmaster' },
+    { rank: 2, id: 'u-2', name: 'Kai Takahashi', avatar: 'KT', streak: 118, totalDrawings: 295, badge: 'Ink Sorcerer' },
+    { rank: 3, id: 'u-3', name: 'Elena Rostova', avatar: 'ER', streak: 94, totalDrawings: 210, badge: 'Color Alchemist' },
+    { rank: 4, id: 'u-4', name: 'Marcus Chen', avatar: 'MC', streak: 87, totalDrawings: 194, badge: 'Gesture Titan' },
+    { rank: 5, id: 'u-5', name: 'Sora Kim', avatar: 'SK', streak: 76, totalDrawings: 152, badge: 'Night Inker' },
+    { rank: 6, id: 'u-6', name: 'Devon Reed', avatar: 'DR', streak: 63, totalDrawings: 140, badge: 'Daily Flame' },
+    { rank: 7, id: 'u-7', name: 'Zara Patel', avatar: 'ZP', streak: 51, totalDrawings: 112, badge: 'Sketch Pioneer' },
   ],
   thisMonth: [
-    { rank: 1, id: 'u-2', name: 'Kai Takahashi', avatar: '⚡', streak: 23, totalDrawings: 47, badge: 'Monthly Champion' },
-    { rank: 2, id: 'u-1', name: 'Aria Vance', avatar: '🎨', streak: 23, totalDrawings: 42, badge: 'Top Contender' },
-    { rank: 3, id: 'u-6', name: 'Devon Reed', avatar: '🔥', streak: 22, totalDrawings: 35, badge: 'Rising Star' },
-    { rank: 4, id: 'u-3', name: 'Elena Rostova', avatar: '🌸', streak: 20, totalDrawings: 31, badge: 'Colorist' },
-    { rank: 5, id: 'u-5', name: 'Sora Kim', avatar: '🌙', streak: 19, totalDrawings: 28, badge: 'Night Inker' },
+    { rank: 1, id: 'u-2', name: 'Kai Takahashi', avatar: 'KT', streak: 23, totalDrawings: 47, badge: 'Monthly Champion' },
+    { rank: 2, id: 'u-1', name: 'Aria Vance', avatar: 'AV', streak: 23, totalDrawings: 42, badge: 'Top Contender' },
+    { rank: 3, id: 'u-6', name: 'Devon Reed', avatar: 'DR', streak: 22, totalDrawings: 35, badge: 'Rising Star' },
+    { rank: 4, id: 'u-3', name: 'Elena Rostova', avatar: 'ER', streak: 20, totalDrawings: 31, badge: 'Colorist' },
+    { rank: 5, id: 'u-5', name: 'Sora Kim', avatar: 'SK', streak: 19, totalDrawings: 28, badge: 'Night Inker' },
   ]
 };

@@ -17,11 +17,11 @@ interface HomeProps {
 }
 
 const SWATCH_COLORS = [
-  { name: 'Riso Vermilion', hex: '#FF4D26' },
-  { name: 'Blueprint Cyan', hex: '#00E5FF' },
-  { name: 'Acid Citron', hex: '#D4F835' },
-  { name: 'Cotton Parchment', hex: '#F6F2E9' },
-  { name: 'Carbon Black', hex: '#11141A' },
+  { name: 'Terracotta Pigment', hex: '#B85333' },
+  { name: 'Prussian Blueprint', hex: '#5294A6' },
+  { name: 'Raw Ochre', hex: '#B59A57' },
+  { name: 'Cotton Parchment', hex: '#F5F2EB' },
+  { name: 'Vine Charcoal', hex: '#24272E' },
 ];
 
 export const Home: React.FC<HomeProps> = ({
@@ -33,7 +33,7 @@ export const Home: React.FC<HomeProps> = ({
   // Live Swatch Workbench State
   const [swatchSurface, setSwatchSurface] = useState<DrawingSurface>('paper');
   const [swatchTool, setSwatchTool] = useState<DrawingTool>('pencil');
-  const [swatchColor, setSwatchColor] = useState<string>('#FF4D26');
+  const [swatchColor, setSwatchColor] = useState<string>('#B85333');
   const [hasDrawn, setHasDrawn] = useState<boolean>(false);
   const [strokeTelemetry, setStrokeTelemetry] = useState<{ speed: string; friction: string }>({
     speed: '0 px/s',
@@ -221,13 +221,13 @@ export const Home: React.FC<HomeProps> = ({
       
       {/* =========================================================================
           HERO SECTION: EDITORIAL ATELIER (0% AI GENERATED)
-          - No purple or indigo anywhere (Rule 1)
-          - No rounded-full announcement pills (Rule 4)
-          - No shouting font-black / bold everything (Rule 3)
-          - Editorial Instrument Serif typography, not default Inter (Rule 6)
-          - Asymmetrical left-aligned layout, not centered column (Rule 7)
-          - Solid matte architectural finish, zero frosted glass blur (Rule 8)
-          - Purposeful typography without an icon on every noun (Rule 5)
+          - No purple or indigo
+          - No neon accents (warm fine art pigments: Terracotta #B85333, Prussian Blue #5294A6, Ochre #B59A57)
+          - Warm graphite background #1A1D24, not pitch near-black void
+          - Zero emojis or special unicode glyphs
+          - Instrument Serif editorial display typography
+          - Asymmetrical left-aligned layout
+          - Solid matte architectural finish, zero frosted glass blur
       ========================================================================= */}
       <section className="relative pt-10 md:pt-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
@@ -239,12 +239,12 @@ export const Home: React.FC<HomeProps> = ({
           {/* Left Column: Asymmetrical Editorial Typography */}
           <div className="lg:col-span-7 space-y-6 text-left">
             
-            {/* Atelier Technical Docket Header (Sharp, no rounded pill) */}
-            <div className="inline-flex items-center gap-2.5 px-2.5 py-1 rounded bg-[#10141D] border border-slate-800 font-mono text-[11px] text-slate-300">
-              <span className="w-2 h-2 rounded-none bg-[#FF4D26]"></span>
+            {/* Atelier Technical Docket Header */}
+            <div className="inline-flex items-center gap-2.5 px-2.5 py-1 rounded bg-[#20242D] border border-slate-700 font-mono text-[11px] text-slate-300">
+              <span className="w-2 h-2 rounded-none bg-[#B85333]"></span>
               <span className="text-white tracking-wider">SD // ATELIER SPECIFICATION</span>
               <span className="text-slate-600">|</span>
-              <span className="text-[#00E5FF]">PHYSICS v2.4</span>
+              <span className="text-[#5294A6]">PHYSICS v2.4</span>
               <span className="text-slate-600">|</span>
               <span className="text-slate-400">LOCAL-FIRST</span>
             </div>
@@ -262,11 +262,11 @@ export const Home: React.FC<HomeProps> = ({
               SketchDraw is a distraction-free drafting studio built for people who miss the resistance of cold-press cotton and 2B graphite. Switch substrates dynamically, study classical drafting fundamentals, or maintain your daily drawing streak.
             </p>
 
-            {/* Tactile Action Buttons (Clean, text-focused, no decorative icon slop) */}
+            {/* Tactile Action Buttons with Terracotta and Prussian Slate */}
             <div className="flex flex-wrap items-center gap-3.5 pt-2 font-mono">
               <button
                 onClick={() => onSelectTab('pad')}
-                className="py-3 px-5 rounded-lg bg-[#FF4D26] hover:bg-[#ff5f38] text-white font-semibold text-xs uppercase tracking-wider riso-stamp active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center gap-2"
+                className="py-3 px-5 rounded-lg bg-[#B85333] hover:bg-[#a6482a] text-white font-medium text-xs uppercase tracking-wider riso-stamp active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center gap-2"
               >
                 <span>Launch The Pad [Free]</span>
                 <span>→</span>
@@ -274,7 +274,7 @@ export const Home: React.FC<HomeProps> = ({
 
               <button
                 onClick={() => onSelectTab('discover')}
-                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700 hover:border-[#00E5FF]/60 text-slate-200 text-xs font-medium transition-all flex items-center gap-2"
+                className="py-3 px-4 rounded-lg bg-[#222630] hover:bg-[#282E3A] border border-slate-700 hover:border-[#5294A6]/60 text-slate-200 text-xs font-medium transition-all flex items-center gap-2"
               >
                 <span>Examine 8 Masterclasses</span>
                 <span>→</span>
@@ -285,7 +285,7 @@ export const Home: React.FC<HomeProps> = ({
                   if (user) onSelectTab('streak');
                   else onOpenAuth();
                 }}
-                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700/80 text-[#D4F835] text-xs font-medium transition-all flex items-center gap-2"
+                className="py-3 px-4 rounded-lg bg-[#222630] hover:bg-[#282E3A] border border-slate-700 text-[#B59A57] text-xs font-medium transition-all flex items-center gap-2"
               >
                 <span>{user ? `Atelier Streak: ${user.streak}d` : 'Streak Docket'}</span>
               </button>
@@ -294,15 +294,15 @@ export const Home: React.FC<HomeProps> = ({
             {/* Technical studio calibration tags */}
             <div className="flex flex-wrap items-center gap-4 pt-3 font-mono text-[11px] text-slate-400">
               <div className="flex items-center gap-1.5">
-                <span className="text-[#00E5FF]">⊕</span>
+                <span className="text-[#5294A6]">•</span>
                 <span>Substrates: Whiteboard / Cold-Press / Kraft</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[#D4F835]">⊕</span>
+                <span className="text-[#B59A57]">•</span>
                 <span>Lossless Retina PNG Export</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[#FF4D26]">⊕</span>
+                <span className="text-[#B85333]">•</span>
                 <span>Zero Account Barrier to Draw</span>
               </div>
             </div>
@@ -314,35 +314,35 @@ export const Home: React.FC<HomeProps> = ({
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
               {/* Drafting Tape Top Accent */}
-              <div className="absolute -top-3 left-8 z-10 px-4 py-0.5 bg-amber-200/15 border border-amber-200/25 text-[10px] font-mono text-amber-200 uppercase tracking-widest rotate-[-2deg] shadow-sm pointer-events-none">
+              <div className="absolute -top-3 left-8 z-10 px-4 py-0.5 bg-amber-200/10 border border-amber-200/20 text-[10px] font-mono text-amber-200/80 uppercase tracking-widest rotate-[-2deg] shadow-sm pointer-events-none">
                 ATELIER SPECIMEN #SD-26
               </div>
 
-              {/* Main Technical Spec Sheet Card (Solid matte, no backdrop-blur) */}
-              <div className="p-5 rounded-xl bg-[#0E131C] border border-slate-700 shadow-2xl relative space-y-4">
+              {/* Main Technical Spec Sheet Card */}
+              <div className="p-5 rounded-xl bg-[#20242E] border border-slate-700 shadow-2xl relative space-y-4">
                 
                 {/* Spec Sheet Header */}
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-mono text-xs">
+                <div className="flex items-center justify-between border-b border-slate-700 pb-3 font-mono text-xs">
                   <div className="flex items-center gap-2 text-slate-300">
-                    <span className="w-2 h-2 bg-[#00E5FF] rounded-none"></span>
+                    <span className="w-2 h-2 bg-[#5294A6] rounded-none"></span>
                     <span className="font-medium">MICROSCOPIC CROSS-SECTION</span>
                   </div>
-                  <span className="text-[10px] text-slate-500 uppercase">FIG 01.3 // TOOTH</span>
+                  <span className="text-[10px] text-slate-400 uppercase">FIG 01.3 // TOOTH</span>
                 </div>
 
                 {/* Technical Microscopy Diagram comparing 3 surfaces */}
-                <div className="p-3 rounded-lg bg-[#070A0F] border border-slate-800 space-y-3 font-mono">
+                <div className="p-3 rounded-lg bg-[#16181F] border border-slate-700/80 space-y-3 font-mono">
                   
                   {/* Surface 1 Cross-section */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-[10px] text-slate-400">
                       <span>01. Slick Glass / Whiteboard</span>
-                      <span className="text-[#00E5FF]">μ = 0.00 (Zero drag)</span>
+                      <span className="text-[#5294A6]">μ = 0.00 (Zero drag)</span>
                     </div>
                     <svg className="w-full h-7" viewBox="0 0 320 28" fill="none">
-                      <line x1="0" y1="20" x2="320" y2="20" stroke="#1E293B" strokeWidth="2" />
-                      <line x1="0" y1="12" x2="320" y2="12" stroke="#00E5FF" strokeWidth="2.5" />
-                      <circle cx="160" cy="12" r="3" fill="#00E5FF" />
+                      <line x1="0" y1="20" x2="320" y2="20" stroke="#2C3240" strokeWidth="2" />
+                      <line x1="0" y1="12" x2="320" y2="12" stroke="#5294A6" strokeWidth="2.5" />
+                      <circle cx="160" cy="12" r="3" fill="#5294A6" />
                     </svg>
                   </div>
 
@@ -350,14 +350,14 @@ export const Home: React.FC<HomeProps> = ({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-[10px] text-slate-400">
                       <span>02. 300gsm Cold-Press Paper</span>
-                      <span className="text-[#FF4D26]">μ = 0.42 (Capillary bleed)</span>
+                      <span className="text-[#B85333]">μ = 0.42 (Capillary bleed)</span>
                     </div>
                     <svg className="w-full h-8" viewBox="0 0 320 32" fill="none">
-                      <path d="M0 24 Q20 18, 40 22 T80 18 T120 25 T160 19 T200 24 T240 18 T280 23 T320 20" stroke="#334155" strokeWidth="1.5" fill="none" />
-                      <path d="M0 14 Q20 10, 40 13 T80 9 T120 16 T160 10 T200 15 T240 10 T280 14 T320 12" stroke="#FF4D26" strokeWidth="2.5" strokeLinecap="round" />
-                      <circle cx="80" cy="14" r="2" fill="#FF4D26" opacity="0.6" />
-                      <circle cx="160" cy="15" r="2" fill="#FF4D26" opacity="0.6" />
-                      <circle cx="240" cy="16" r="2" fill="#FF4D26" opacity="0.5" />
+                      <path d="M0 24 Q20 18, 40 22 T80 18 T120 25 T160 19 T200 24 T240 18 T280 23 T320 20" stroke="#3D4556" strokeWidth="1.5" fill="none" />
+                      <path d="M0 14 Q20 10, 40 13 T80 9 T120 16 T160 10 T200 15 T240 10 T280 14 T320 12" stroke="#B85333" strokeWidth="2.5" strokeLinecap="round" />
+                      <circle cx="80" cy="14" r="2" fill="#B85333" opacity="0.6" />
+                      <circle cx="160" cy="15" r="2" fill="#B85333" opacity="0.6" />
+                      <circle cx="240" cy="16" r="2" fill="#B85333" opacity="0.5" />
                     </svg>
                   </div>
 
@@ -365,11 +365,11 @@ export const Home: React.FC<HomeProps> = ({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-[10px] text-slate-400">
                       <span>03. Coarse Kraft Sketchbook</span>
-                      <span className="text-[#D4F835]">μ = 0.88 (Graphite chatter)</span>
+                      <span className="text-[#B59A57]">μ = 0.88 (Graphite chatter)</span>
                     </div>
                     <svg className="w-full h-8" viewBox="0 0 320 32" fill="none">
-                      <path d="M0 26 L15 18 L30 25 L45 16 L60 24 L75 17 L90 26 L105 18 L120 25 L135 15 L150 24 L165 17 L180 26 L195 16 L210 24 L225 17 L240 25 L255 16 L270 24 L285 18 L300 25 L320 19" stroke="#334155" strokeWidth="1.5" />
-                      <path d="M0 16 L15 13 L30 15 L45 12 L60 16 L75 12 L90 15 L105 13 L120 16 L135 11 L150 15 L165 12 L180 15 L195 11 L210 15 L225 12 L240 15 L255 11 L270 15 L285 13 L300 16 L320 13" stroke="#D4F835" strokeWidth="2" strokeDasharray="6 3 10 2" />
+                      <path d="M0 26 L15 18 L30 25 L45 16 L60 24 L75 17 L90 26 L105 18 L120 25 L135 15 L150 24 L165 17 L180 26 L195 16 L210 24 L225 17 L240 25 L255 16 L270 24 L285 18 L300 25 L320 19" stroke="#3D4556" strokeWidth="1.5" />
+                      <path d="M0 16 L15 13 L30 15 L45 12 L60 16 L75 12 L90 15 L105 13 L120 16 L135 11 L150 15 L165 12 L180 15 L195 11 L210 15 L225 12 L240 15 L255 11 L270 15 L285 13 L300 16 L320 13" stroke="#B59A57" strokeWidth="2" strokeDasharray="6 3 10 2" />
                     </svg>
                   </div>
 
@@ -380,7 +380,7 @@ export const Home: React.FC<HomeProps> = ({
                   <div className="text-slate-400">
                     <span className="text-slate-500">ENGINE:</span> Canvas2D Physics
                   </div>
-                  <div className="px-2 py-0.5 rounded border border-[#00E5FF]/40 text-[#00E5FF] text-[10px] font-medium">
+                  <div className="px-2 py-0.5 rounded border border-[#5294A6]/40 text-[#5294A6] text-[10px] font-medium">
                     TRY SWATCH TESTER BELOW ↓
                   </div>
                 </div>
@@ -396,16 +396,16 @@ export const Home: React.FC<HomeProps> = ({
 
       {/* =========================================================================
           THE SWATCH WORKBENCH (REPLACING THE 3-CARD "HOLY TRINITY")
-          - 0% AI generated: Real interactive canvas test bench right on the page!
-          - Users switch substrates and test 2B pencil, pen, and riso marker live.
+          - Real interactive canvas test bench right on the page
+          - Users switch substrates and test 2B pencil, pen, and riso marker live
       ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-xl bg-[#0D111A] border border-slate-700/80 shadow-2xl p-6 sm:p-8 space-y-6">
+        <div className="rounded-xl bg-[#20242E] border border-slate-700/80 shadow-2xl p-6 sm:p-8 space-y-6">
           
           {/* Workbench Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-5">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-700 pb-5">
             <div>
-              <div className="font-mono text-xs text-[#FF4D26] uppercase tracking-wider mb-1.5">
+              <div className="font-mono text-xs text-[#B85333] uppercase tracking-wider mb-1.5">
                 [INTERACTIVE SUBSTRATE TEST BENCH]
               </div>
               <h2 className="text-2xl sm:text-3xl font-normal text-white font-serif italic">
@@ -429,16 +429,16 @@ export const Home: React.FC<HomeProps> = ({
               }}
               className={`p-4 rounded-lg text-left border transition-all ${
                 swatchSurface === 'whiteboard'
-                  ? 'bg-[#121926] border-[#00E5FF] shadow-lg shadow-[#00E5FF]/10'
-                  : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
+                  ? 'bg-[#262C38] border-[#5294A6] shadow-lg shadow-[#5294A6]/10'
+                  : 'bg-[#181B22] border-slate-700 hover:border-slate-600 text-slate-400'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-semibold ${swatchSurface === 'whiteboard' ? 'text-[#00E5FF]' : 'text-slate-300'}`}>
+                <span className={`text-xs font-semibold ${swatchSurface === 'whiteboard' ? 'text-[#5294A6]' : 'text-slate-300'}`}>
                   01 // ARCHITECTURAL WHITEBOARD
                 </span>
                 {swatchSurface === 'whiteboard' && (
-                  <span className="w-1.5 h-1.5 rounded-none bg-[#00E5FF]"></span>
+                  <span className="w-1.5 h-1.5 rounded-none bg-[#5294A6]"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-400 mt-2 font-sans">
@@ -460,16 +460,16 @@ export const Home: React.FC<HomeProps> = ({
               }}
               className={`p-4 rounded-lg text-left border transition-all ${
                 swatchSurface === 'paper'
-                  ? 'bg-[#191522] border-[#FF4D26] shadow-lg shadow-[#FF4D26]/10'
-                  : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
+                  ? 'bg-[#2C2422] border-[#B85333] shadow-lg shadow-[#B85333]/10'
+                  : 'bg-[#181B22] border-slate-700 hover:border-slate-600 text-slate-400'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-semibold ${swatchSurface === 'paper' ? 'text-[#FF4D26]' : 'text-slate-300'}`}>
+                <span className={`text-xs font-semibold ${swatchSurface === 'paper' ? 'text-[#B85333]' : 'text-slate-300'}`}>
                   02 // 300gsm COLD-PRESS PAPER
                 </span>
                 {swatchSurface === 'paper' && (
-                  <span className="w-1.5 h-1.5 rounded-none bg-[#FF4D26]"></span>
+                  <span className="w-1.5 h-1.5 rounded-none bg-[#B85333]"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-400 mt-2 font-sans">
@@ -491,16 +491,16 @@ export const Home: React.FC<HomeProps> = ({
               }}
               className={`p-4 rounded-lg text-left border transition-all ${
                 swatchSurface === 'sketch'
-                  ? 'bg-[#161C14] border-[#D4F835] shadow-lg shadow-[#D4F835]/10'
-                  : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
+                  ? 'bg-[#2A2922] border-[#B59A57] shadow-lg shadow-[#B59A57]/10'
+                  : 'bg-[#181B22] border-slate-700 hover:border-slate-600 text-slate-400'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-semibold ${swatchSurface === 'sketch' ? 'text-[#D4F835]' : 'text-slate-300'}`}>
+                <span className={`text-xs font-semibold ${swatchSurface === 'sketch' ? 'text-[#B59A57]' : 'text-slate-300'}`}>
                   03 // COARSE KRAFT SKETCHBOOK
                 </span>
                 {swatchSurface === 'sketch' && (
-                  <span className="w-1.5 h-1.5 rounded-none bg-[#D4F835]"></span>
+                  <span className="w-1.5 h-1.5 rounded-none bg-[#B59A57]"></span>
                 )}
               </div>
               <p className="text-[11px] text-slate-400 mt-2 font-sans">
@@ -516,11 +516,11 @@ export const Home: React.FC<HomeProps> = ({
           </div>
 
           {/* Instrument Rack & Color Wells */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-[#080B10] border border-slate-800 rounded-lg font-mono text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-[#16181F] border border-slate-700 rounded-lg font-mono text-xs">
             
             {/* Tool Selection */}
             <div className="flex items-center gap-2">
-              <span className="text-slate-500 text-[10px] uppercase">Instrument:</span>
+              <span className="text-slate-400 text-[10px] uppercase">Instrument:</span>
               <div className="flex items-center gap-1.5">
                 
                 <button
@@ -528,7 +528,7 @@ export const Home: React.FC<HomeProps> = ({
                   onClick={() => setSwatchTool('pencil')}
                   className={`px-3 py-1.5 rounded border text-xs transition-all ${
                     swatchTool === 'pencil'
-                      ? 'bg-[#1E2538] text-white border-slate-600 font-medium'
+                      ? 'bg-[#2A303D] text-white border-slate-500 font-medium'
                       : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                   }`}
                 >
@@ -540,7 +540,7 @@ export const Home: React.FC<HomeProps> = ({
                   onClick={() => setSwatchTool('pen')}
                   className={`px-3 py-1.5 rounded border text-xs transition-all ${
                     swatchTool === 'pen'
-                      ? 'bg-[#1E2538] text-white border-slate-600 font-medium'
+                      ? 'bg-[#2A303D] text-white border-slate-500 font-medium'
                       : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                   }`}
                 >
@@ -552,7 +552,7 @@ export const Home: React.FC<HomeProps> = ({
                   onClick={() => setSwatchTool('marker')}
                   className={`px-3 py-1.5 rounded border text-xs transition-all ${
                     swatchTool === 'marker'
-                      ? 'bg-[#1E2538] text-white border-slate-600 font-medium'
+                      ? 'bg-[#2A303D] text-white border-slate-500 font-medium'
                       : 'bg-transparent text-slate-400 border-transparent hover:text-white'
                   }`}
                 >
@@ -564,7 +564,7 @@ export const Home: React.FC<HomeProps> = ({
 
             {/* Color Swatch Wells */}
             <div className="flex items-center gap-2">
-              <span className="text-slate-500 text-[10px] uppercase">Pigment:</span>
+              <span className="text-slate-400 text-[10px] uppercase">Pigment:</span>
               <div className="flex items-center gap-1.5">
                 {SWATCH_COLORS.map(c => (
                   <button
@@ -575,7 +575,7 @@ export const Home: React.FC<HomeProps> = ({
                     className={`w-5 h-5 rounded-sm border transition-all ${
                       swatchColor === c.hex
                         ? 'border-white scale-125 shadow-md'
-                        : 'border-slate-700 hover:scale-110'
+                        : 'border-slate-600 hover:scale-110'
                     }`}
                     style={{ backgroundColor: c.hex }}
                   />
@@ -587,7 +587,7 @@ export const Home: React.FC<HomeProps> = ({
             <button
               type="button"
               onClick={handleResetSwatch}
-              className="px-3 py-1 rounded bg-[#131722] hover:bg-[#1C2233] text-slate-300 hover:text-white border border-slate-700 text-[11px] transition-colors"
+              className="px-3 py-1 rounded bg-[#242833] hover:bg-[#2C313E] text-slate-300 hover:text-white border border-slate-700 text-[11px] transition-colors"
             >
               Reset Swatch [C]
             </button>
@@ -613,27 +613,26 @@ export const Home: React.FC<HomeProps> = ({
               className="absolute inset-0 w-full h-full block z-10"
             />
 
-            {/* Instruction overlay when untouched (Solid matte, no backdrop-blur) */}
+            {/* Instruction overlay when untouched */}
             {!hasDrawn && (
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                <div className="px-4 py-2 rounded bg-[#070A0F] border border-slate-700 font-mono text-xs text-slate-300 flex items-center gap-2.5 shadow-xl">
-                  <span className="text-[#FF4D26]">✎</span>
+                <div className="px-4 py-2 rounded bg-[#181B22] border border-slate-700 font-mono text-xs text-slate-300 flex items-center gap-2.5 shadow-xl">
                   <span>Drag or scribble anywhere in this box to feel the drag</span>
                   <span className="text-slate-500 text-[10px]">[ACTIVE BENCH]</span>
                 </div>
               </div>
             )}
 
-            {/* Live Telemetry readout overlay (Solid matte, no backdrop-blur) */}
-            <div className="absolute bottom-2.5 left-3 font-mono text-[10px] text-slate-400 bg-[#070A0F] px-2.5 py-1 rounded border border-slate-800 pointer-events-none z-20 flex items-center gap-3">
+            {/* Live Telemetry readout overlay */}
+            <div className="absolute bottom-2.5 left-3 font-mono text-[10px] text-slate-400 bg-[#181B22] px-2.5 py-1 rounded border border-slate-700 pointer-events-none z-20 flex items-center gap-3">
               <span>SPEED: <strong className="text-white font-normal">{strokeTelemetry.speed}</strong></span>
               <span>•</span>
-              <span>FRICTION: <strong className="text-[#00E5FF] font-normal">{strokeTelemetry.friction}</strong></span>
+              <span>FRICTION: <strong className="text-[#5294A6] font-normal">{strokeTelemetry.friction}</strong></span>
             </div>
           </div>
 
           {/* Direct CTA under the Workbench: Launch in Pad */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-800 font-mono">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-700 font-mono">
             <div className="text-xs text-slate-400 text-center sm:text-left">
               Active configuration: <span className="text-white uppercase">{swatchSurface}</span> substrate with <span className="text-white uppercase">{swatchTool}</span>.
             </div>
@@ -654,19 +653,16 @@ export const Home: React.FC<HomeProps> = ({
 
       {/* =========================================================================
           EXPLORE SECTION: ARCHITECTURAL DIRECTORY TABLE
-          "and at the bottom, it says explore, and you can choose what you want, from: Discover, The Pad, Streak"
-          - CRUCIAL FIX FOR RULE 2 (icon card grids +12):
-            Instead of 3 rounded cards in a grid with icons, this is an elegant
-            horizontal ruled directory docket (index list). ZERO card grid!
+          - Elegant horizontal ruled directory docket (index list). ZERO card grid!
       ========================================================================= */}
       <section id="explore-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         
         <div className="space-y-6">
           
           {/* Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-700 pb-4">
             <div>
-              <div className="font-mono text-xs text-[#00E5FF] tracking-wider mb-1">
+              <div className="font-mono text-xs text-[#5294A6] tracking-wider mb-1">
                 [ATELIER DIRECTORY]
               </div>
               <h2 className="text-3xl sm:text-4xl font-normal text-white font-serif italic tracking-tight">
@@ -679,17 +675,17 @@ export const Home: React.FC<HomeProps> = ({
           </div>
 
           {/* Architectural Ruled Directory Index (Zero Card Grids!) */}
-          <div className="border-t border-b border-slate-800 divide-y divide-slate-800 font-mono">
+          <div className="border-t border-b border-slate-700 divide-y divide-slate-700 font-mono">
             
             {/* Destination 01: Discover */}
             <div 
               onClick={() => onSelectTab('discover')}
-              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#111622] transition-colors cursor-pointer group"
+              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#222630] transition-colors cursor-pointer group"
             >
               <div className="flex items-start md:items-center gap-6">
                 <span className="text-xs text-slate-500 font-mono">[01]</span>
                 <div>
-                  <h3 className="text-xl font-normal text-white group-hover:text-[#00E5FF] transition-colors font-serif italic">
+                  <h3 className="text-xl font-normal text-white group-hover:text-[#5294A6] transition-colors font-serif italic">
                     Discover Archive
                   </h3>
                   <p className="text-xs font-sans text-slate-400 mt-1 max-w-xl">
@@ -697,7 +693,7 @@ export const Home: React.FC<HomeProps> = ({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-[#00E5FF] font-medium self-end md:self-auto">
+              <div className="flex items-center gap-2 text-xs text-[#5294A6] font-medium self-end md:self-auto">
                 <span>Examine Archive</span>
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>
@@ -706,12 +702,12 @@ export const Home: React.FC<HomeProps> = ({
             {/* Destination 02: The Pad */}
             <div 
               onClick={() => onSelectTab('pad')}
-              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#111622] transition-colors cursor-pointer group"
+              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#222630] transition-colors cursor-pointer group"
             >
               <div className="flex items-start md:items-center gap-6">
                 <span className="text-xs text-slate-500 font-mono">[02]</span>
                 <div>
-                  <h3 className="text-xl font-normal text-white group-hover:text-[#FF4D26] transition-colors font-serif italic">
+                  <h3 className="text-xl font-normal text-white group-hover:text-[#B85333] transition-colors font-serif italic">
                     The Pad Studio
                   </h3>
                   <p className="text-xs font-sans text-slate-400 mt-1 max-w-xl">
@@ -719,7 +715,7 @@ export const Home: React.FC<HomeProps> = ({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-[#FF4D26] font-medium self-end md:self-auto">
+              <div className="flex items-center gap-2 text-xs text-[#B85333] font-medium self-end md:self-auto">
                 <span>Launch Studio</span>
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>
@@ -731,12 +727,12 @@ export const Home: React.FC<HomeProps> = ({
                 if (user) onSelectTab('streak');
                 else onOpenAuth();
               }}
-              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#111622] transition-colors cursor-pointer group"
+              className="py-5 px-3 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#222630] transition-colors cursor-pointer group"
             >
               <div className="flex items-start md:items-center gap-6">
                 <span className="text-xs text-slate-500 font-mono">[03]</span>
                 <div>
-                  <h3 className="text-xl font-normal text-white group-hover:text-[#D4F835] transition-colors font-serif italic">
+                  <h3 className="text-xl font-normal text-white group-hover:text-[#B59A57] transition-colors font-serif italic">
                     Atelier Streak Ledger
                   </h3>
                   <p className="text-xs font-sans text-slate-400 mt-1 max-w-xl">
@@ -744,7 +740,7 @@ export const Home: React.FC<HomeProps> = ({
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-[#D4F835] font-medium self-end md:self-auto">
+              <div className="flex items-center gap-2 text-xs text-[#B59A57] font-medium self-end md:self-auto">
                 <span>{user ? 'View Ledger' : 'Sign In for Ledger'}</span>
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>

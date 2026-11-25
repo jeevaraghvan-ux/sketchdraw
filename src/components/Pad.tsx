@@ -406,7 +406,7 @@ export const Pad: React.FC<PadProps> = ({
     const title = activeTechniquePrompt || `${artistName}Study on ${surface.toUpperCase()} surface`;
     const result = recordDailyDrawing(title, surface);
     
-    // Trigger festive celebratory confetti 🎉
+    // Trigger celebratory confetti burst
     confetti({
       particleCount: 80,
       spread: 70,

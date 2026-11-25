@@ -9,7 +9,7 @@ import { LegalModal } from './components/LegalModals';
 import { OpeningIntro } from './components/OpeningIntro';
 import type { UserProfile, DrawingSurface, DrawingTool } from './types';
 import { getCurrentUser, signOutUser, getSupabaseClient } from './services/supabase';
-import { PenTool, Heart } from 'lucide-react';
+import { PenTool } from 'lucide-react';
 
 export function App() {
   const [showIntro, setShowIntro] = useState(false);
@@ -92,7 +92,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0E14] text-slate-100 flex flex-col font-sans selection:bg-[#00E5FF]/20 selection:text-white">
+    <div className="min-h-screen bg-[#1A1D24] text-slate-100 flex flex-col font-sans selection:bg-[#5294A6]/25 selection:text-white">
       
       {/* Top Navigation Bar with Tabs & Sign In button */}
       <Navbar
@@ -221,16 +221,14 @@ export function App() {
                 setShowIntro(true);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-brand-cyan transition-colors"
+              className="hover:text-slate-300 transition-colors"
             >
-              Replay Intro ✨
+              Replay Opening Sequence
             </button>
           </div>
 
           <div className="flex items-center gap-2 text-slate-500 text-[11px]">
-            <span>Crafted with</span>
-            <Heart className="w-3.5 h-3.5 text-brand-pink fill-current" />
-            <span>for digital creators</span>
+            <span>Crafted for visual thinkers</span>
           </div>
 
         </div>

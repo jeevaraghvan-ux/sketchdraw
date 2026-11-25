@@ -87,7 +87,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
           id: user.id,
           email: user.email,
           name: meta.username || meta.full_name || meta.name || user.email?.split('@')[0] || 'Artist',
-          avatarUrl: meta.avatar_url || meta.picture || '🎨',
+          avatarUrl: meta.avatar_url || meta.picture || 'SD',
           isGuest: false,
           streak: stored?.streak || 1,
           bestStreak: stored?.bestStreak || 1,
@@ -176,7 +176,7 @@ export async function verifyEmailCode(
         id: data.user.id,
         email: data.user.email,
         name,
-        avatarUrl: '🎨',
+        avatarUrl: 'SD',
         isGuest: false,
         streak: 1,
         bestStreak: 1,
@@ -218,7 +218,7 @@ export async function signInWithEmailPassword(
         id: data.user.id,
         email: data.user.email,
         name,
-        avatarUrl: meta.avatar_url || '🎨',
+        avatarUrl: meta.avatar_url || 'SD',
         isGuest: false,
         streak: stored?.streak || 1,
         bestStreak: stored?.bestStreak || 1,
@@ -255,7 +255,7 @@ export function signInAsGuest(name: string = 'Creative Guest'): UserProfile {
   const profile: UserProfile = existing || {
     id: 'guest-' + Math.random().toString(36).substring(2, 9),
     name: name,
-    avatarUrl: '🎨',
+    avatarUrl: 'SD',
     isGuest: true,
     streak: 3,
     bestStreak: 7,
@@ -294,10 +294,10 @@ export function recordDailyDrawing(
     profile.streak = 1;
     profile.bestStreak = Math.max(profile.bestStreak || 0, 1);
     streakIncremented = true;
-    message = '🔥 You started a brand new 1-day drawing streak!';
+    message = 'You started a brand new 1-day drawing streak!';
   } else if (lastDrawn === today) {
     // Already drew today
-    message = '🎨 Another masterpiece logged for today! Streak is secured.';
+    message = 'Another sketch logged for today. Streak is secured.';
   } else {
     // Check if yesterday
     const lastDate = new Date(lastDrawn);
@@ -309,12 +309,12 @@ export function recordDailyDrawing(
       profile.streak += 1;
       profile.bestStreak = Math.max(profile.bestStreak || 0, profile.streak);
       streakIncremented = true;
-      message = `🔥 Streak continued! You are on a ${profile.streak}-day streak!`;
+      message = `Streak continued. You are on a ${profile.streak}-day streak.`;
     } else {
       // Streak lapsed
       profile.streak = 1;
       streakIncremented = true;
-      message = '🔥 Welcome back! New streak ignited at Day 1.';
+      message = 'Welcome back. New streak ignited at Day 1.';
     }
   }
 
@@ -359,7 +359,7 @@ export function getLeaderboard(): { allTime: LeaderboardEntry[]; thisMonth: Lead
       rank: 4,
       id: profile.id,
       name: profile.name + ' (You)',
-      avatar: profile.avatarUrl || '🎨',
+      avatar: profile.avatarUrl || 'YOU',
       streak: profile.streak,
       totalDrawings: profile.totalDrawings,
       badge: profile.streak >= 14 ? 'Flame Master' : 'Dedicated Artist',

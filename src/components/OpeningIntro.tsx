@@ -20,27 +20,27 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
 
     // Explosive drafting riso confetti burst
     confetti({
-      particleCount: 70,
+      particleCount: 60,
       spread: 90,
       origin: { y: 0.5, x: 0.5 },
-      colors: ['#FF4D26', '#00E5FF', '#D4F835', '#FFFFFF']
+      colors: ['#B85333', '#5294A6', '#B59A57', '#F5F2EB']
     });
 
     // Secondary side cannons for maximum visual impact
     setTimeout(() => {
       confetti({
-        particleCount: 35,
+        particleCount: 30,
         angle: 60,
         spread: 50,
         origin: { x: 0, y: 0.6 },
-        colors: ['#FF4D26', '#00E5FF']
+        colors: ['#B85333', '#5294A6']
       });
       confetti({
-        particleCount: 35,
+        particleCount: 30,
         angle: 120,
         spread: 50,
         origin: { x: 1, y: 0.6 },
-        colors: ['#D4F835', '#FF4D26']
+        colors: ['#B59A57', '#B85333']
       });
     }, 150);
 
@@ -67,7 +67,7 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
 
     // Ambient floating embers
     const embers: { x: number; y: number; r: number; color: string; vx: number; vy: number; alpha: number }[] = [];
-    const colors = ['#FF4D26', '#00E5FF', '#D4F835', '#FFFFFF'];
+    const colors = ['#B85333', '#5294A6', '#B59A57', '#F5F2EB'];
     for (let i = 0; i < 40; i++) {
       embers.push({
         x: Math.random() * width,
@@ -154,17 +154,17 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
 
         // Gradient stroke
         const grad = ctx.createLinearGradient(cx - 80, cy - 60, cx + 80, cy + 60);
-        grad.addColorStop(0, '#EC4899');
-        grad.addColorStop(0.5, '#8B5CF6');
-        grad.addColorStop(1, '#06B6D4');
+        grad.addColorStop(0, '#B85333');
+        grad.addColorStop(0.5, '#B59A57');
+        grad.addColorStop(1, '#5294A6');
 
         ctx.save();
         ctx.strokeStyle = grad;
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 4;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.shadowBlur = 18;
-        ctx.shadowColor = '#8B5CF6';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = '#5294A6';
 
         ctx.beginPath();
         ctx.moveTo(emblemPoints[0].x, emblemPoints[0].y);
@@ -194,15 +194,15 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
       if (stroke.length > 1) {
         ctx.save();
         const strokeGrad = ctx.createLinearGradient(0, 0, width, height);
-        strokeGrad.addColorStop(0, '#FF4D26');
-        strokeGrad.addColorStop(1, '#00E5FF');
+        strokeGrad.addColorStop(0, '#B85333');
+        strokeGrad.addColorStop(1, '#5294A6');
 
         ctx.strokeStyle = strokeGrad;
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 4;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.shadowBlur = 16;
-        ctx.shadowColor = '#00E5FF';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = '#5294A6';
 
         ctx.beginPath();
         ctx.moveTo(stroke[0].x, stroke[0].y);
@@ -287,12 +287,12 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
           }}
           className="absolute -top-6 -left-2 pointer-events-none z-20 flex items-center gap-1 animate-pulse"
         >
-          <div className="w-7 h-7 rounded-lg bg-[#FF4D26] p-0.5 shadow-lg shadow-[#FF4D26]/30 -rotate-45">
-            <div className="w-full h-full bg-[#0B0E14] rounded-md flex items-center justify-center">
-              <PenTool className="w-3.5 h-3.5 text-[#00E5FF]" />
+          <div className="w-7 h-7 rounded-lg bg-[#B85333] p-0.5 shadow-lg shadow-[#B85333]/30 -rotate-45">
+            <div className="w-full h-full bg-[#1A1D24] rounded-md flex items-center justify-center">
+              <PenTool className="w-3.5 h-3.5 text-[#5294A6]" />
             </div>
           </div>
-          <span className="w-2 h-2 rounded-sm bg-[#00E5FF] animate-ping opacity-75"></span>
+          <span className="w-2 h-2 rounded-sm bg-[#5294A6] animate-ping opacity-75"></span>
         </div>
       )}
 
@@ -308,12 +308,11 @@ export const OpeningIntro: React.FC<OpeningIntroProps> = ({ onComplete }) => {
         {/* Phase 3 Interactive Prompt */}
         {phase === 'ready_to_slash' && (
           <div className="mt-8 flex flex-col items-center gap-2 animate-bounce">
-            <div className="px-5 py-2.5 rounded-lg bg-[#111622] border border-slate-700 shadow-xl flex items-center gap-2.5 font-mono text-xs text-white">
-              <span className="text-[#00E5FF]">✎</span>
+            <div className="px-5 py-2.5 rounded-lg bg-[#20242D] border border-slate-700 shadow-xl flex items-center gap-2.5 font-mono text-xs text-white">
               <span className="font-medium tracking-wide">
                 Draw or drag a stroke to enter
               </span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#FF4D26]" />
+              <ArrowRight className="w-3.5 h-3.5 text-[#B85333]" />
             </div>
             <span className="text-[10px] text-slate-500 font-mono">
               Click &amp; drag anywhere on the canvas
