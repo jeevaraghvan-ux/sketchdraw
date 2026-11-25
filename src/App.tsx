@@ -114,6 +114,7 @@ export function App() {
               setActiveTab(tab);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+            onLaunchInPad={handleLaunchInPad}
             user={user}
             onOpenAuth={() => setIsAuthModalOpen(true)}
           />

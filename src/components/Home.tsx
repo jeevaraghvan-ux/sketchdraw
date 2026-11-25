@@ -1,67 +1,284 @@
-import React from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { 
-  PenTool, Compass, Flame, Sparkles, Layers, Palette, 
-  ArrowRight, Zap, CheckCircle 
+  PenTool, Compass, Flame, ArrowRight, RotateCcw, 
+  Sliders
 } from 'lucide-react';
-import type { UserProfile } from '../types';
+import type { UserProfile, DrawingSurface, DrawingTool } from '../types';
+import { drawPhysicsStroke, createSurfaceTexture } from '../services/drawingPhysics';
+import type { Point } from '../services/drawingPhysics';
 
 interface HomeProps {
   onSelectTab: (tab: 'home' | 'discover' | 'pad' | 'streak') => void;
+  onLaunchInPad?: (config: {
+    tool: DrawingTool;
+    surface: DrawingSurface;
+    color: string;
+    width: number;
+    techniqueTitle?: string;
+  }) => void;
   user: UserProfile | null;
   onOpenAuth: () => void;
 }
 
+const SWATCH_COLORS = [
+  { name: 'Riso Vermilion', hex: '#FF4D26' },
+  { name: 'Blueprint Cyan', hex: '#00E5FF' },
+  { name: 'Acid Citron', hex: '#D4F835' },
+  { name: 'Cotton Parchment', hex: '#F6F2E9' },
+  { name: 'Carbon Black', hex: '#11141A' },
+];
+
 export const Home: React.FC<HomeProps> = ({
   onSelectTab,
+  onLaunchInPad,
   user,
   onOpenAuth
 }) => {
-  return (
-    <div className="space-y-20 pb-24">
-      
-      {/* Hero Section */}
-      <section className="relative pt-12 md:pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        
-        {/* Glow ambient background effects */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[350px] bg-gradient-to-tr from-brand-purple/20 via-brand-pink/15 to-brand-cyan/20 blur-[120px] rounded-full pointer-events-none -z-10" />
+  // Live Swatch Workbench State
+  const [swatchSurface, setSwatchSurface] = useState<DrawingSurface>('paper');
+  const [swatchTool, setSwatchTool] = useState<DrawingTool>('pencil');
+  const [swatchColor, setSwatchColor] = useState<string>('#FF4D26');
+  const [hasDrawn, setHasDrawn] = useState<boolean>(false);
+  const [strokeTelemetry, setStrokeTelemetry] = useState<{ speed: string; friction: string }>({
+    speed: '0 px/s',
+    friction: '82% (Cellulose tooth)'
+  });
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDrawingRef = useRef<boolean>(false);
+  const lastPointRef = useRef<Point | null>(null);
+
+  // Initialize and clear Swatch Canvas
+  const initCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+
+    const rect = container.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const width = Math.floor(rect.width);
+    const height = 280;
+
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.scale(dpr, dpr);
+
+    // Draw faint initial blueprint guides if user hasn't drawn
+    if (!hasDrawn) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 6]);
+
+      // Perspective horizon guide
+      ctx.beginPath();
+      ctx.moveTo(30, height / 2);
+      ctx.lineTo(width - 30, height / 2);
+      ctx.stroke();
+
+      // Drafting center circle
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, 54, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+  }, [hasDrawn]);
+
+  useEffect(() => {
+    initCanvas();
+    const handleResize = () => initCanvas();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [initCanvas, swatchSurface]);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const point: Point = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      pressure: e.pressure || 0.5,
+      time: Date.now()
+    };
+
+    isDrawingRef.current = true;
+    lastPointRef.current = point;
+
+    if (!hasDrawn) {
+      setHasDrawn(true);
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      drawPhysicsStroke(
+        ctx,
+        point,
+        { x: point.x + 0.1, y: point.y + 0.1 },
+        {
+          tool: swatchTool,
+          surface: swatchSurface,
+          color: swatchColor,
+          size: swatchTool === 'marker' ? 12 : swatchTool === 'pencil' ? 3 : 2.5,
+          opacity: swatchTool === 'marker' ? 0.65 : 1
+        },
+        1
+      );
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDrawingRef.current || !lastPointRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const currentPoint: Point = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+      pressure: e.pressure || 0.5,
+      time: Date.now()
+    };
+
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      const dt = Math.max(1, (currentPoint.time || 0) - (lastPointRef.current.time || 0));
+      const dist = Math.hypot(currentPoint.x - lastPointRef.current.x, currentPoint.y - lastPointRef.current.y);
+      const speed = Math.round((dist / dt) * 1000);
+
+      const frictionDesc = 
+        swatchSurface === 'whiteboard' ? '0.00 (Zero drag glass)' :
+        swatchSurface === 'paper' ? '82% (Cellulose capillary sink)' :
+        '88% (Graphite chatter tooth)';
+
+      setStrokeTelemetry({
+        speed: `${speed} px/s`,
+        friction: frictionDesc
+      });
+
+      drawPhysicsStroke(
+        ctx,
+        lastPointRef.current,
+        currentPoint,
+        {
+          tool: swatchTool,
+          surface: swatchSurface,
+          color: swatchColor,
+          size: swatchTool === 'marker' ? 12 : swatchTool === 'pencil' ? 3.2 : 2.5,
+          opacity: swatchTool === 'marker' ? 0.65 : 1
+        },
+        1
+      );
+    }
+
+    lastPointRef.current = currentPoint;
+  };
+
+  const handlePointerUp = () => {
+    isDrawingRef.current = false;
+    lastPointRef.current = null;
+  };
+
+  const handleResetSwatch = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    setHasDrawn(false);
+    setStrokeTelemetry({
+      speed: '0 px/s',
+      friction: swatchSurface === 'whiteboard' ? '0.00 (Zero drag glass)' : swatchSurface === 'paper' ? '82% (Cellulose capillary sink)' : '88% (Graphite chatter tooth)'
+    });
+    setTimeout(initCanvas, 20);
+  };
+
+  const handleLaunchThisSurface = () => {
+    if (onLaunchInPad) {
+      onLaunchInPad({
+        tool: swatchTool,
+        surface: swatchSurface,
+        color: swatchColor,
+        width: swatchTool === 'marker' ? 12 : swatchTool === 'pencil' ? 3.5 : 2.5
+      });
+    } else {
+      onSelectTab('pad');
+    }
+  };
+
+  const surfaceTexture = createSurfaceTexture(swatchSurface);
+
+  return (
+    <div className="space-y-16 pb-24 text-slate-100">
+      
+      {/* =========================================================================
+          HERO SECTION: THE DRAFTING STUDIO (OPTION A + OPTION B)
+          - No purple radial blur sphere
+          - No shouting buzzwords or generic rainbow gradients
+          - Real architect / zine drafting aesthetic with tactile cues
+      ========================================================================= */}
+      <section className="relative pt-10 md:pt-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        
+        {/* Subtle technical background grid with corner ticks */}
+        <div className="absolute inset-0 drafting-subgrid opacity-20 pointer-events-none rounded-3xl" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative">
           
-          {/* Left Hero Column */}
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-dark-800/90 border border-slate-700/80 text-xs font-medium text-slate-300 shadow-sm">
-              <span className="flex h-2 w-2 rounded-full bg-brand-cyan animate-pulse"></span>
-              <span className="text-slate-300">Free Digital Drawing App</span>
-              <span className="text-slate-500">•</span>
-              <span className="text-brand-purple font-semibold">Dark &amp; Colorful</span>
+          {/* Left Column: Authentic, grounded copy */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            
+            {/* Atelier Specification Header */}
+            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded bg-[#10141D] border border-slate-700/80 font-mono text-[11px] text-slate-300">
+              <span className="w-2 h-2 rounded-full bg-[#FF4D26] animate-pulse"></span>
+              <span className="font-semibold text-white tracking-wider">SD // ATELIER WORKBENCH</span>
+              <span className="text-slate-600">|</span>
+              <span className="text-[#00E5FF]">PHYSICS v2.4</span>
+              <span className="text-slate-600">|</span>
+              <span className="text-slate-400">LOCAL-FIRST</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white font-display leading-[1.1]">
-              Draw without limits with{' '}
-              <span className="gradient-text-rainbow">realistic paper physics.</span>
+            {/* Un-hyped, resonant headline */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-display leading-[1.15]">
+              Most digital whiteboards feel like drawing with soap on glass.
+              <span className="block text-slate-400 font-normal text-2xl sm:text-3xl lg:text-3xl mt-3">
+                We engineered digital ink with actual tooth, drag, and paper friction.
+              </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              <strong>SketchDraw</strong> combines a fluid whiteboard experience with authentic paper physics. Transform your canvas into organic paper or rough sketch texture, master pro drawing techniques in the <em>Discover</em> library, and ignite your daily drawing streak.
+            {/* Real artist empathy paragraph */}
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed font-normal">
+              <strong>SketchDraw</strong> is a distraction-free drafting studio built for people who miss the tactile feedback of cold-press cotton and 2B graphite. Switch substrates on the fly, study classical drafting fundamentals, or maintain your daily drawing streak.
             </p>
 
-            {/* Quick Hero Actions */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            {/* Tactile Action Buttons with Risograph Accents */}
+            <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <button
                 onClick={() => onSelectTab('pad')}
-                className="py-3.5 px-6 rounded-xl bg-gradient-to-r from-brand-purple via-brand-pink to-brand-cyan hover:brightness-110 text-white font-bold text-sm shadow-xl shadow-brand-purple/25 active:scale-95 transition-all flex items-center gap-2.5 group"
+                className="py-3 px-5 rounded-lg bg-[#FF4D26] hover:bg-[#ff5f38] text-white font-mono font-bold text-xs uppercase tracking-wider riso-stamp active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center gap-2 group"
               >
                 <PenTool className="w-4 h-4 text-white group-hover:rotate-12 transition-transform" />
-                <span>Launch The Pad</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span>Launch The Pad [Free]</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </button>
 
               <button
                 onClick={() => onSelectTab('discover')}
-                className="py-3.5 px-6 rounded-xl bg-dark-800 hover:bg-dark-750 border border-slate-700 hover:border-brand-cyan/50 text-slate-200 font-semibold text-sm transition-all flex items-center gap-2 shadow-sm"
+                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700 hover:border-[#00E5FF]/60 text-slate-200 font-mono text-xs font-semibold transition-all flex items-center gap-2"
               >
-                <Compass className="w-4 h-4 text-brand-cyan" />
-                <span>Browse Techniques</span>
+                <Compass className="w-4 h-4 text-[#00E5FF]" />
+                <span>Examine 8 Masterclasses</span>
               </button>
 
               <button
@@ -69,150 +286,111 @@ export const Home: React.FC<HomeProps> = ({
                   if (user) onSelectTab('streak');
                   else onOpenAuth();
                 }}
-                className="py-3.5 px-5 rounded-xl bg-dark-800/80 hover:bg-dark-750 border border-slate-700/80 text-brand-orange font-semibold text-sm transition-all flex items-center gap-2"
+                className="py-3 px-4 rounded-lg bg-[#111622] hover:bg-[#161C2C] border border-slate-700/80 text-[#D4F835] font-mono text-xs font-semibold transition-all flex items-center gap-2"
               >
-                <Flame className="w-4 h-4" />
-                <span>{user ? `Streak: ${user.streak}d` : 'Daily Streak'}</span>
+                <Flame className="w-4 h-4 text-[#FF4D26]" />
+                <span>{user ? `Atelier Streak: ${user.streak}d` : 'Streak Docket'}</span>
               </button>
             </div>
 
-            {/* Micro feature pills */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4 text-xs text-slate-400">
+            {/* Technical studio calibration tags */}
+            <div className="flex flex-wrap items-center gap-4 pt-3 font-mono text-[11px] text-slate-400">
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
-                <span>100% Free &amp; In-Browser</span>
+                <span className="text-[#00E5FF]">⊕</span>
+                <span>Substrates: Whiteboard / Cold-Press / Kraft</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-brand-purple" />
-                <span>Whiteboard, Paper &amp; Sketch Surfaces</span>
+                <span className="text-[#D4F835]">⊕</span>
+                <span>High-DPI Retina PNG Export</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-brand-cyan" />
-                <span>High-DPI Retina Export</span>
+                <span className="text-[#FF4D26]">⊕</span>
+                <span>Zero Account Barrier to Draw</span>
               </div>
             </div>
+
           </div>
 
-          {/* Right Hero Column: Showcase Pictures & Artwork Previews */}
+          {/* Right Column: Physical Studio Proof Sheet (Replacing Stock SVG) */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto max-w-md lg:max-w-none">
               
-              {/* Main Artwork Card (Cyberpunk & Vibrant Digital Sketch) */}
-              <div className="relative p-3 rounded-2xl bg-dark-800/90 border border-slate-700 shadow-2xl backdrop-blur-xl group overflow-hidden">
-                <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-dark-950 border border-slate-800 flex items-center justify-center">
+              {/* Drafting Tape Top Accent */}
+              <div className="absolute -top-3 left-8 z-10 px-5 py-1 bg-amber-200/20 border border-amber-200/30 text-[10px] font-mono text-amber-200 uppercase tracking-widest rotate-[-2deg] backdrop-blur-sm shadow-sm pointer-events-none">
+                ATELIER SPECIMEN #SD-26
+              </div>
+
+              {/* Main Technical Spec Sheet Card */}
+              <div className="p-5 rounded-2xl bg-[#0E131C] border border-slate-700/90 shadow-2xl relative space-y-4">
+                
+                {/* Spec Sheet Header */}
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-mono text-xs">
+                  <div className="flex items-center gap-2 text-slate-300">
+                    <span className="w-2.5 h-2.5 bg-[#00E5FF] rounded-sm"></span>
+                    <span className="font-bold">MICROSCOPIC CROSS-SECTION</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 uppercase">FIG 01.3 // TOOTH</span>
+                </div>
+
+                {/* Technical Microscopy Diagram comparing 3 surfaces */}
+                <div className="p-3 rounded-xl bg-[#070A0F] border border-slate-800 space-y-3 font-mono">
                   
-                  {/* Stylized SVG Digital Illustration */}
-                  <svg className="w-full h-full object-cover" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="400" height="300" fill="#0B0F19" />
-                    
-                    {/* Background grid */}
-                    <g opacity="0.12" stroke="#8B5CF6" strokeWidth="0.8">
-                      <line x1="0" y1="50" x2="400" y2="50" />
-                      <line x1="0" y1="100" x2="400" y2="100" />
-                      <line x1="0" y1="150" x2="400" y2="150" />
-                      <line x1="0" y1="200" x2="400" y2="200" />
-                      <line x1="0" y1="250" x2="400" y2="250" />
-                      <line x1="100" y1="0" x2="100" y2="300" />
-                      <line x1="200" y1="0" x2="200" y2="300" />
-                      <line x1="300" y1="0" x2="300" y2="300" />
-                    </g>
-
-                    {/* Mountain silhouette */}
-                    <path d="M-20 280 L90 170 L180 230 L270 140 L370 240 L420 200 L420 300 L-20 300 Z" fill="#131926" />
-                    
-                    {/* Neon Glowing Sun / Portal */}
-                    <circle cx="270" cy="130" r="48" fill="url(#sunGrad)" />
-                    <circle cx="270" cy="130" r="48" stroke="#EC4899" strokeWidth="3" opacity="0.8" />
-                    
-                    {/* Dynamic Gestural Neon Strokes */}
-                    <path d="M40 240 C110 180, 140 100, 240 70 C310 50, 360 90, 380 130" stroke="url(#neonGrad1)" strokeWidth="6" strokeLinecap="round" filter="drop-shadow(0 0 12px #06B6D4)" />
-                    
-                    <path d="M60 260 C130 210, 200 180, 290 190 C340 200, 370 230, 390 250" stroke="url(#neonGrad2)" strokeWidth="4" strokeLinecap="round" opacity="0.85" filter="drop-shadow(0 0 10px #EC4899)" />
-
-                    {/* Expressive Cross-Hatching on foreground sphere */}
-                    <g opacity="0.85">
-                      <circle cx="110" cy="150" r="38" fill="#161D2D" stroke="#8B5CF6" strokeWidth="2.5" />
-                      <line x1="90" y1="135" x2="135" y2="145" stroke="#38BDF8" strokeWidth="1.5" />
-                      <line x1="85" y1="145" x2="135" y2="155" stroke="#38BDF8" strokeWidth="1.5" />
-                      <line x1="85" y1="155" x2="130" y2="165" stroke="#38BDF8" strokeWidth="1.5" />
-                      <line x1="90" y1="165" x2="125" y2="175" stroke="#38BDF8" strokeWidth="1.5" />
-                      {/* Cross */}
-                      <line x1="95" y1="140" x2="125" y2="170" stroke="#EC4899" strokeWidth="1.5" />
-                      <line x1="105" y1="135" x2="130" y2="160" stroke="#EC4899" strokeWidth="1.5" />
-                    </g>
-
-                    {/* Ink Splatter / Stippling dots */}
-                    <circle cx="160" cy="120" r="2" fill="#06B6D4" />
-                    <circle cx="168" cy="115" r="3" fill="#EC4899" />
-                    <circle cx="178" cy="126" r="1.5" fill="#FBBF24" />
-                    <circle cx="190" cy="118" r="2.5" fill="#8B5CF6" />
-                    <circle cx="210" cy="108" r="1.5" fill="#10B981" />
-
-                    {/* Gradients */}
-                    <defs>
-                      <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#EC4899" />
-                        <stop offset="100%" stopColor="#8B5CF6" />
-                      </linearGradient>
-                      <linearGradient id="neonGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#06B6D4" />
-                        <stop offset="50%" stopColor="#8B5CF6" />
-                        <stop offset="100%" stopColor="#EC4899" />
-                      </linearGradient>
-                      <linearGradient id="neonGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#F97316" />
-                        <stop offset="50%" stopColor="#FBBF24" />
-                        <stop offset="100%" stopColor="#EC4899" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-
-                  {/* Surface tag indicator */}
-                  <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-dark-900/90 border border-slate-700/80 backdrop-blur-md flex items-center gap-1.5 text-[11px] text-slate-300">
-                    <span className="w-2 h-2 rounded-full bg-brand-cyan"></span>
-                    <span>Paper Physics Active</span>
+                  {/* Surface 1 Cross-section */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <span>01. Slick Glass / Whiteboard</span>
+                      <span className="text-[#00E5FF]">μ = 0.00 (Zero drag)</span>
+                    </div>
+                    <svg className="w-full h-8" viewBox="0 0 320 28" fill="none">
+                      <line x1="0" y1="20" x2="320" y2="20" stroke="#1E293B" strokeWidth="2" />
+                      <line x1="0" y1="12" x2="320" y2="12" stroke="#00E5FF" strokeWidth="2.5" />
+                      <circle cx="160" cy="12" r="3" fill="#00E5FF" />
+                    </svg>
                   </div>
 
-                  <div className="absolute top-3 right-3 px-2 py-0.5 rounded-full bg-brand-purple/20 border border-brand-purple/40 text-[10px] font-bold text-brand-purple">
-                    Made with The Pad
+                  {/* Surface 2 Cross-section: Cold-Press Paper */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <span>02. 300gsm Cold-Press Paper</span>
+                      <span className="text-[#FF4D26]">μ = 0.42 (Capillary bleed)</span>
+                    </div>
+                    <svg className="w-full h-10" viewBox="0 0 320 32" fill="none">
+                      {/* Paper fiber wave */}
+                      <path d="M0 24 Q20 18, 40 22 T80 18 T120 25 T160 19 T200 24 T240 18 T280 23 T320 20" stroke="#334155" strokeWidth="1.5" fill="none" />
+                      {/* Ink bleeding into cotton ridges */}
+                      <path d="M0 14 Q20 10, 40 13 T80 9 T120 16 T160 10 T200 15 T240 10 T280 14 T320 12" stroke="#FF4D26" strokeWidth="3" strokeLinecap="round" />
+                      <circle cx="80" cy="14" r="2.5" fill="#FF4D26" opacity="0.6" />
+                      <circle cx="160" cy="15" r="2" fill="#FF4D26" opacity="0.6" />
+                      <circle cx="240" cy="16" r="3" fill="#FF4D26" opacity="0.5" />
+                    </svg>
+                  </div>
+
+                  {/* Surface 3 Cross-section: Rough Kraft Sketch */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <span>03. Coarse Kraft Sketchbook</span>
+                      <span className="text-[#D4F835]">μ = 0.88 (Graphite chatter)</span>
+                    </div>
+                    <svg className="w-full h-10" viewBox="0 0 320 32" fill="none">
+                      {/* Jagged tooth */}
+                      <path d="M0 26 L15 18 L30 25 L45 16 L60 24 L75 17 L90 26 L105 18 L120 25 L135 15 L150 24 L165 17 L180 26 L195 16 L210 24 L225 17 L240 25 L255 16 L270 24 L285 18 L300 25 L320 19" stroke="#334155" strokeWidth="1.5" />
+                      {/* Graphite chatter deposits */}
+                      <path d="M0 16 L15 13 L30 15 L45 12 L60 16 L75 12 L90 15 L105 13 L120 16 L135 11 L150 15 L165 12 L180 15 L195 11 L210 15 L225 12 L240 15 L255 11 L270 15 L285 13 L300 16 L320 13" stroke="#D4F835" strokeWidth="2.5" strokeDasharray="6 3 10 2" />
+                    </svg>
+                  </div>
+
+                </div>
+
+                {/* Card footer studio stamp */}
+                <div className="flex items-center justify-between pt-1 font-mono text-[11px]">
+                  <div className="text-slate-400">
+                    <span className="text-slate-500">ENGINE:</span> Canvas2D Physics
+                  </div>
+                  <div className="px-2 py-0.5 rounded border border-[#00E5FF]/40 text-[#00E5FF] text-[10px] font-bold">
+                    TRY SWATCH TESTER BELOW ↓
                   </div>
                 </div>
 
-                {/* Card footer details */}
-                <div className="p-3 flex items-center justify-between text-xs">
-                  <div>
-                    <p className="font-semibold text-white">Neon Twilight Study</p>
-                    <p className="text-slate-400 text-[11px]">Pen, Marker &amp; Rough Sketch tool</p>
-                  </div>
-                  <button
-                    onClick={() => onSelectTab('pad')}
-                    className="px-3 py-1.5 rounded-lg bg-brand-purple/20 hover:bg-brand-purple/30 text-brand-purple font-semibold text-xs border border-brand-purple/30 transition-colors"
-                  >
-                    Open Canvas
-                  </button>
-                </div>
-              </div>
-
-              {/* Floating Picture Card 1: Stippling & Inking */}
-              <div className="hidden sm:flex absolute -bottom-6 -left-8 p-3 rounded-xl bg-dark-850/95 border border-slate-700 shadow-xl backdrop-blur-md items-center gap-3 animate-float-slow">
-                <div className="w-10 h-10 rounded-lg bg-dark-900 border border-slate-700 flex items-center justify-center text-xl">
-                  ✒️
-                </div>
-                <div className="text-xs">
-                  <p className="font-bold text-white">Inking &amp; Stippling</p>
-                  <p className="text-[11px] text-brand-cyan">Discover Technique #3</p>
-                </div>
-              </div>
-
-              {/* Floating Picture Card 2: Streak celebration */}
-              <div className="hidden sm:flex absolute -top-5 -right-6 p-2.5 rounded-xl bg-dark-850/95 border border-slate-700 shadow-xl backdrop-blur-md items-center gap-2.5">
-                <div className="w-9 h-9 rounded-lg bg-brand-orange/20 border border-brand-orange/30 flex items-center justify-center">
-                  <Flame className="w-5 h-5 text-brand-orange" />
-                </div>
-                <div className="text-xs">
-                  <p className="font-bold text-white">Daily Drawing Streak</p>
-                  <p className="text-[10px] text-slate-400">Join 1,200+ active artists</p>
-                </div>
               </div>
 
             </div>
@@ -221,134 +399,327 @@ export const Home: React.FC<HomeProps> = ({
         </div>
       </section>
 
-      {/* Surface Physics Showcase */}
+
+      {/* =========================================================================
+          THE SWATCH WORKBENCH (REPLACING THE 3-CARD "HOLY TRINITY")
+          - 0% AI generated: Instead of 3 static text cards with icons,
+            a real, interactive canvas test bench right on the landing page!
+          - Users switch substrates and test 2B pencil, pen, and riso marker live!
+      ========================================================================= */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 rounded-3xl bg-dark-850/70 border border-slate-800 backdrop-blur-md space-y-8">
+        <div className="rounded-2xl bg-[#0D111A] border border-slate-700/80 shadow-2xl p-6 sm:p-8 space-y-6">
           
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-black text-white font-display">
-              Three Revolutionary Drawing Surfaces
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Unlike normal drawing apps that only simulate rigid pixels, SketchDraw dynamically adjusts brush resistance, bleeding, and grain based on your selected surface.
+          {/* Workbench Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+              <div className="inline-flex items-center gap-2 font-mono text-xs text-[#FF4D26] font-semibold uppercase tracking-wider mb-1.5">
+                <Sliders className="w-3.5 h-3.5" />
+                <span>Interactive Substrate Test Bench</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white font-display">
+                Feel the Tooth Before You Open the Canvas
+              </h2>
+            </div>
+            <p className="text-xs font-mono text-slate-400 max-w-md">
+              Select a substrate below, pick an instrument, and drag your cursor directly onto the test pad. Zero sign-up, zero simulation fluff.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Substrate Selector (The 3 Real Surfaces) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono">
             
-            {/* Surface 1: Whiteboard */}
-            <div className="p-5 rounded-2xl bg-dark-900 border border-slate-800 hover:border-brand-cyan/40 transition-all space-y-3 group">
-              <div className="w-10 h-10 rounded-xl bg-brand-cyan/15 text-brand-cyan flex items-center justify-center border border-brand-cyan/20 group-hover:scale-105 transition-transform">
-                <Layers className="w-5 h-5" />
+            {/* Substrate 1: Whiteboard */}
+            <button
+              type="button"
+              onClick={() => {
+                setSwatchSurface('whiteboard');
+                setStrokeTelemetry(prev => ({ ...prev, friction: '0.00 (Zero drag glass)' }));
+              }}
+              className={`p-4 rounded-xl text-left border transition-all ${
+                swatchSurface === 'whiteboard'
+                  ? 'bg-[#121926] border-[#00E5FF] shadow-lg shadow-[#00E5FF]/10'
+                  : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-bold ${swatchSurface === 'whiteboard' ? 'text-[#00E5FF]' : 'text-slate-300'}`}>
+                  01 // ARCHITECTURAL WHITEBOARD
+                </span>
+                {swatchSurface === 'whiteboard' && (
+                  <span className="w-2 h-2 rounded-full bg-[#00E5FF] animate-pulse"></span>
+                )}
               </div>
-              <h3 className="text-base font-bold text-white flex items-center justify-between">
-                <span>Whiteboard</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">Smooth</span>
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Zero friction, crisp vector-like edges, and an optional architectural alignment grid. Perfect for rapid mind maps, diagramming, and bold clean inking.
+              <p className="text-[11px] text-slate-400 mt-2 font-sans">
+                Slick dry-erase surface with zero drag. Ideal for diagrams, quick wireframes, and vector-crisp drafting.
               </p>
-              <div className="pt-2 text-[11px] text-brand-cyan font-medium flex items-center gap-1">
-                <span>Physics: Zero drag, crisp lines</span>
+              <div className="mt-3 text-[10px] text-slate-500 flex items-center gap-2">
+                <span>DRAG: 0.00</span>
+                <span>•</span>
+                <span>RESISTANCE: NONE</span>
+              </div>
+            </button>
+
+            {/* Substrate 2: 300gsm Cold-Press Paper */}
+            <button
+              type="button"
+              onClick={() => {
+                setSwatchSurface('paper');
+                setStrokeTelemetry(prev => ({ ...prev, friction: '82% (Cellulose capillary sink)' }));
+              }}
+              className={`p-4 rounded-xl text-left border transition-all ${
+                swatchSurface === 'paper'
+                  ? 'bg-[#191522] border-[#FF4D26] shadow-lg shadow-[#FF4D26]/10'
+                  : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-bold ${swatchSurface === 'paper' ? 'text-[#FF4D26]' : 'text-slate-300'}`}>
+                  02 // 300gsm COLD-PRESS PAPER
+                </span>
+                {swatchSurface === 'paper' && (
+                  <span className="w-2 h-2 rounded-full bg-[#FF4D26] animate-pulse"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-400 mt-2 font-sans">
+                Authentic woven cellulose tooth. Pigment absorbs with velocity-based capillary feathering along stroke borders.
+              </p>
+              <div className="mt-3 text-[10px] text-slate-500 flex items-center gap-2">
+                <span>TOOTH: 82%</span>
+                <span>•</span>
+                <span>ABSORPTION: 240ms</span>
+              </div>
+            </button>
+
+            {/* Substrate 3: Rough Kraft Sketch */}
+            <button
+              type="button"
+              onClick={() => {
+                setSwatchSurface('sketch');
+                setStrokeTelemetry(prev => ({ ...prev, friction: '88% (Graphite chatter tooth)' }));
+              }}
+              className={`p-4 rounded-xl text-left border transition-all ${
+                swatchSurface === 'sketch'
+                  ? 'bg-[#161C14] border-[#D4F835] shadow-lg shadow-[#D4F835]/10'
+                  : 'bg-[#090C12] border-slate-800 hover:border-slate-700 text-slate-400'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-bold ${swatchSurface === 'sketch' ? 'text-[#D4F835]' : 'text-slate-300'}`}>
+                  03 // COARSE KRAFT SKETCHBOOK
+                </span>
+                {swatchSurface === 'sketch' && (
+                  <span className="w-2 h-2 rounded-full bg-[#D4F835] animate-pulse"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-400 mt-2 font-sans">
+                Heavy tooth textured kraft board. Fractures graphite strokes into authentic microscopic dust chatter.
+              </p>
+              <div className="mt-3 text-[10px] text-slate-500 flex items-center gap-2">
+                <span>DRAG: 0.88</span>
+                <span>•</span>
+                <span>PARTICLES: GRAPHITE DUST</span>
+              </div>
+            </button>
+
+          </div>
+
+          {/* Instrument Rack & Color Wells */}
+          <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-[#080B10] border border-slate-800 rounded-xl font-mono text-xs">
+            
+            {/* Tool Selection */}
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500 text-[10px] uppercase">Instrument:</span>
+              <div className="flex items-center gap-1.5">
+                
+                <button
+                  type="button"
+                  onClick={() => setSwatchTool('pencil')}
+                  className={`px-3 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 ${
+                    swatchTool === 'pencil'
+                      ? 'bg-[#1E2538] text-white border-slate-600 font-bold'
+                      : 'bg-transparent text-slate-400 border-transparent hover:text-white'
+                  }`}
+                >
+                  <span>✏️ 2B Graphite</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSwatchTool('pen')}
+                  className={`px-3 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 ${
+                    swatchTool === 'pen'
+                      ? 'bg-[#1E2538] text-white border-slate-600 font-bold'
+                      : 'bg-transparent text-slate-400 border-transparent hover:text-white'
+                  }`}
+                >
+                  <span>✒️ 0.5mm Technical Pen</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSwatchTool('marker')}
+                  className={`px-3 py-1.5 rounded-lg border text-xs transition-all flex items-center gap-1.5 ${
+                    swatchTool === 'marker'
+                      ? 'bg-[#1E2538] text-white border-slate-600 font-bold'
+                      : 'bg-transparent text-slate-400 border-transparent hover:text-white'
+                  }`}
+                >
+                  <span>🖍️ Chisel Riso</span>
+                </button>
+
               </div>
             </div>
 
-            {/* Surface 2: Paper */}
-            <div className="p-5 rounded-2xl bg-dark-900 border border-brand-purple/40 shadow-lg shadow-brand-purple/10 space-y-3 group relative overflow-hidden">
-              <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-brand-purple/20 text-brand-purple text-[9px] font-bold uppercase tracking-wider">
-                Signature Feature
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-brand-purple/20 text-brand-purple flex items-center justify-center border border-brand-purple/30 group-hover:scale-105 transition-transform">
-                <Palette className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white flex items-center justify-between">
-                <span>Paper with Physics</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-brand-purple/20 text-brand-purple">Organic</span>
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Transforms your board into authentic woven paper. Experience subtle cellulose grain, velocity-based ink absorption, and organic feathering along the stroke edges.
-              </p>
-              <div className="pt-2 text-[11px] text-brand-purple font-medium flex items-center gap-1">
-                <span>Physics: Ink bleed &amp; velocity absorption</span>
-              </div>
-            </div>
-
-            {/* Surface 3: Sketch */}
-            <div className="p-5 rounded-2xl bg-dark-900 border border-slate-800 hover:border-brand-orange/40 transition-all space-y-3 group">
-              <div className="w-10 h-10 rounded-xl bg-brand-orange/15 text-brand-orange flex items-center justify-center border border-brand-orange/20 group-hover:scale-105 transition-transform">
-                <Zap className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white flex items-center justify-between">
-                <span>Sketch Canvas</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400">Heavy Tooth</span>
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Heavy tooth textured sketchbook paper. Generates realistic charcoal dust, graphite chatter particles, and fractured rough strokes that catch on the paper ridges.
-              </p>
-              <div className="pt-2 text-[11px] text-brand-orange font-medium flex items-center gap-1">
-                <span>Physics: Graphite drag &amp; charcoal scatter</span>
+            {/* Color Swatch Wells */}
+            <div className="flex items-center gap-2">
+              <span className="text-slate-500 text-[10px] uppercase">Pigment:</span>
+              <div className="flex items-center gap-1.5">
+                {SWATCH_COLORS.map(c => (
+                  <button
+                    key={c.hex}
+                    type="button"
+                    onClick={() => setSwatchColor(c.hex)}
+                    title={c.name}
+                    className={`w-6 h-6 rounded-full border transition-all ${
+                      swatchColor === c.hex
+                        ? 'border-white scale-125 shadow-md'
+                        : 'border-slate-700 hover:scale-110'
+                    }`}
+                    style={{ backgroundColor: c.hex }}
+                  />
+                ))}
               </div>
             </div>
 
+            {/* Clear Button */}
+            <button
+              type="button"
+              onClick={handleResetSwatch}
+              className="px-3 py-1 rounded bg-[#131722] hover:bg-[#1C2233] text-slate-300 hover:text-white border border-slate-700 text-[11px] flex items-center gap-1.5 transition-colors"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Reset Swatch</span>
+            </button>
+
+          </div>
+
+          {/* Interactive Live Canvas Area */}
+          <div 
+            ref={containerRef}
+            className="relative w-full rounded-xl overflow-hidden border border-slate-700 shadow-inner min-h-[280px] cursor-crosshair touch-none select-none transition-all"
+            style={{
+              backgroundColor: surfaceTexture.backgroundColor,
+              backgroundImage: surfaceTexture.texturePattern
+            }}
+          >
+            {/* Live Canvas */}
+            <canvas
+              ref={canvasRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerLeave={handlePointerUp}
+              className="absolute inset-0 w-full h-full block z-10"
+            />
+
+            {/* Hand-drawn sketchy instruction overlay when untouched */}
+            {!hasDrawn && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                <div className="px-4 py-2 rounded-lg bg-[#070A0F]/90 border border-slate-700/80 backdrop-blur-md font-mono text-xs text-slate-300 flex items-center gap-2.5 shadow-xl">
+                  <span className="text-[#FF4D26] text-base font-bold">✎</span>
+                  <span>Drag or scribble anywhere in this box to feel the drag</span>
+                  <span className="text-slate-500 text-[10px]">[ACTIVE BENCH]</span>
+                </div>
+              </div>
+            )}
+
+            {/* Live Telemetry readout overlay in bottom corner */}
+            <div className="absolute bottom-2.5 left-3 font-mono text-[10px] text-slate-400 bg-[#070A0F]/85 px-2.5 py-1 rounded border border-slate-800 backdrop-blur-md pointer-events-none z-20 flex items-center gap-3">
+              <span>SPEED: <strong className="text-white">{strokeTelemetry.speed}</strong></span>
+              <span>•</span>
+              <span>FRICTION: <strong className="text-[#00E5FF]">{strokeTelemetry.friction}</strong></span>
+            </div>
+          </div>
+
+          {/* Direct CTA under the Workbench: Launch in Pad */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 border-t border-slate-800/80 font-mono">
+            <div className="text-xs text-slate-400 text-center sm:text-left">
+              Active configuration: <strong className="text-white uppercase">{swatchSurface}</strong> substrate with <strong className="text-white uppercase">{swatchTool}</strong>.
+            </div>
+
+            <button
+              type="button"
+              onClick={handleLaunchThisSurface}
+              className="w-full sm:w-auto py-2.5 px-5 rounded-lg bg-white hover:bg-slate-200 text-slate-900 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md group"
+            >
+              <span>Open this surface in The Pad Studio</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
 
         </div>
       </section>
 
-      {/* EXPLORE SECTION (AT THE BOTTOM OF HOMEPAGE) */}
-      {/* "and at the bottom, it says explore, and you can choose what you want, from: Discover, The Pad, Streak" */}
-      <section id="explore-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+      {/* =========================================================================
+          EXPLORE SECTION (AT THE BOTTOM OF HOMEPAGE)
+          "and at the bottom, it says explore, and you can choose what you want, from: Discover, The Pad, Streak"
+          - Styled as 3 Tactile Studio Portfolios / Archival Zine Folios
+          - Preserves all navigation props and auth checks!
+      ========================================================================= */}
+      <section id="explore-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         
         <div className="space-y-8">
           
+          {/* Section Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-5">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-purple uppercase tracking-wider mb-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Jump Into The Creative Universe</span>
+              <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-[#00E5FF] uppercase tracking-wider mb-1">
+                <span>ATELIER ARCHIVE // DESTINATIONS</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-black text-white font-display tracking-tight">
                 Explore SketchDraw
               </h2>
             </div>
-            <p className="text-xs text-slate-400 max-w-md">
-              Choose your destination below. You can also use the navigation tabs at the top of the page to switch between scenarios at any time without scrolling down!
+            <p className="text-xs font-mono text-slate-400 max-w-md">
+              Choose your studio destination below. You can also use the top navigation bar at any moment to jump between modes.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* 3 Studio Folios Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono">
             
-            {/* Instance 1: Discover */}
+            {/* Folio 01: Discover */}
             <div 
               onClick={() => onSelectTab('discover')}
-              className="p-6 rounded-2xl bg-dark-850 border border-slate-800 hover:border-brand-cyan/50 shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1.5 group flex flex-col justify-between"
+              className="p-6 rounded-2xl bg-[#0C1018] border border-slate-800 hover:border-[#00E5FF]/60 shadow-xl cursor-pointer transition-all duration-200 hover:-translate-y-1 group flex flex-col justify-between"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-brand-cyan/15 text-brand-cyan flex items-center justify-center border border-brand-cyan/30 group-hover:scale-110 group-hover:bg-brand-cyan group-hover:text-dark-900 transition-all shadow-lg shadow-brand-cyan/10">
-                    <Compass className="w-6 h-6" />
+                  <div className="w-10 h-10 rounded-lg bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/25 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Compass className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
-                    Instance 1
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 uppercase">
+                    Folio 01 // Masterclasses
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-white group-hover:text-brand-cyan transition-colors font-display">
+                  <h3 className="text-lg font-bold text-white group-hover:text-[#00E5FF] transition-colors font-sans">
                     Discover
                   </h3>
-                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                    A comprehensive library full of different drawing techniques: from dynamic gesture sketching, coloring &amp; blending, cross-hatching, stippling, to perspective and chiaroscuro.
+                  <p className="text-xs font-sans text-slate-400 mt-2 leading-relaxed">
+                    A curated archive of classical and digital drawing techniques: dynamic gesture mechanics, cross-hatching, stippling, and lighting studies.
                   </p>
                 </div>
 
                 <div className="space-y-1.5 pt-2 text-[11px] text-slate-400">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan"></span>
+                    <span className="text-[#00E5FF]">↳</span>
                     <span>Interactive step-by-step masterclasses</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan"></span>
+                    <span className="text-[#00E5FF]">↳</span>
                     <span>1-Click "Try in The Pad" presets</span>
                   </div>
                 </div>
@@ -357,46 +728,46 @@ export const Home: React.FC<HomeProps> = ({
               <div className="pt-6">
                 <button
                   type="button"
-                  className="w-full py-2.5 px-4 rounded-xl bg-dark-800 group-hover:bg-brand-cyan group-hover:text-dark-900 text-slate-200 font-semibold text-xs transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#141A26] group-hover:bg-[#00E5FF] group-hover:text-slate-900 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                 >
-                  <span>Explore Discover Library</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span>Open Discover Archive</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
 
-            {/* Instance 2: The Pad */}
+            {/* Folio 02: The Pad */}
             <div 
               onClick={() => onSelectTab('pad')}
-              className="p-6 rounded-2xl bg-gradient-to-b from-dark-850 via-dark-850 to-brand-purple/10 border border-brand-purple/40 hover:border-brand-purple shadow-xl shadow-brand-purple/10 cursor-pointer transition-all duration-300 hover:-translate-y-1.5 group flex flex-col justify-between"
+              className="p-6 rounded-2xl bg-[#0F121B] border border-slate-700/80 hover:border-[#FF4D26] shadow-xl cursor-pointer transition-all duration-200 hover:-translate-y-1 group flex flex-col justify-between"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-brand-pink to-brand-purple text-white flex items-center justify-center shadow-lg shadow-brand-purple/30 group-hover:scale-110 transition-all">
-                    <PenTool className="w-6 h-6" />
+                  <div className="w-10 h-10 rounded-lg bg-[#FF4D26]/15 text-[#FF4D26] border border-[#FF4D26]/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <PenTool className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-purple/20 text-brand-purple border border-brand-purple/30">
-                    Instance 2
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FF4D26]/15 text-[#FF4D26] border border-[#FF4D26]/30 uppercase">
+                    Folio 02 // Drafting Board
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-white group-hover:text-brand-purple transition-colors font-display">
+                  <h3 className="text-lg font-bold text-white group-hover:text-[#FF4D26] transition-colors font-sans">
                     The Pad
                   </h3>
-                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                    A full-on digital sketchpad like a normal whiteboard app, but with selectable drawing surfaces: Whiteboard, Paper with physics, and Sketch. Includes pen, pencil, marker, rough sketch, shapes, flood fill, and custom vibrant colors.
+                  <p className="text-xs font-sans text-slate-400 mt-2 leading-relaxed">
+                    The full-scale physical drawing canvas. Switch between whiteboard, 300gsm cold-press, and kraft sketch with pen, pencil, marker, shapes, and Retina export.
                   </p>
                 </div>
 
                 <div className="space-y-1.5 pt-2 text-[11px] text-slate-400">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-purple"></span>
-                    <span>Whiteboard, Paper &amp; Sketch surfaces</span>
+                    <span className="text-[#FF4D26]">↳</span>
+                    <span>Whiteboard, Paper &amp; Sketch physics</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-purple"></span>
-                    <span>High-resolution PNG / SVG exports</span>
+                    <span className="text-[#FF4D26]">↳</span>
+                    <span>Lossless Retina PNG &amp; clipboard export</span>
                   </div>
                 </div>
               </div>
@@ -404,49 +775,49 @@ export const Home: React.FC<HomeProps> = ({
               <div className="pt-6">
                 <button
                   type="button"
-                  className="w-full py-2.5 px-4 rounded-xl bg-brand-purple text-white font-semibold text-xs shadow-md shadow-brand-purple/25 group-hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#FF4D26] hover:bg-[#ff613b] text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md"
                 >
-                  <span>Launch The Pad</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span>Launch The Pad Studio</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
 
-            {/* Scenario 3: The Streak */}
+            {/* Folio 03: The Streak */}
             <div 
               onClick={() => {
                 if (user) onSelectTab('streak');
                 else onOpenAuth();
               }}
-              className="p-6 rounded-2xl bg-dark-850 border border-slate-800 hover:border-brand-orange/50 shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1.5 group flex flex-col justify-between"
+              className="p-6 rounded-2xl bg-[#0C1018] border border-slate-800 hover:border-[#D4F835]/60 shadow-xl cursor-pointer transition-all duration-200 hover:-translate-y-1 group flex flex-col justify-between"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-brand-orange/15 text-brand-orange flex items-center justify-center border border-brand-orange/30 group-hover:scale-110 group-hover:bg-brand-orange group-hover:text-dark-900 transition-all shadow-lg shadow-brand-orange/10">
-                    <Flame className="w-6 h-6" />
+                  <div className="w-10 h-10 rounded-lg bg-[#D4F835]/10 text-[#D4F835] border border-[#D4F835]/25 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <Flame className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-orange/10 text-brand-orange border border-brand-orange/20">
-                    Scenario 3
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800/80 text-slate-400 border border-slate-700/60 uppercase">
+                    Folio 03 // Atelier Ledger
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-white group-hover:text-brand-orange transition-colors font-display">
+                  <h3 className="text-lg font-bold text-white group-hover:text-[#D4F835] transition-colors font-sans">
                     The Streak
                   </h3>
-                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">
-                    Track your daily drawing consistency! Appears once signed in, showing how many days you've drawn, activity heatmaps, daily prompt challenges, and a leaderboard with top streaks.
+                  <p className="text-xs font-sans text-slate-400 mt-2 leading-relaxed">
+                    Build your daily drawing habit. Features day streak tracking, activity heatmaps, daily prompt dockets, and the community artist leaderboard.
                   </p>
                 </div>
 
                 <div className="space-y-1.5 pt-2 text-[11px] text-slate-400">
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-orange"></span>
-                    <span>Daily drawing flame counter</span>
+                    <span className="text-[#D4F835]">↳</span>
+                    <span>Daily atelier streak flame counter</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-orange"></span>
-                    <span>Global streak leaderboard &amp; rankings</span>
+                    <span className="text-[#D4F835]">↳</span>
+                    <span>Daily prompt docket &amp; global rankings</span>
                   </div>
                 </div>
               </div>
@@ -454,10 +825,10 @@ export const Home: React.FC<HomeProps> = ({
               <div className="pt-6">
                 <button
                   type="button"
-                  className="w-full py-2.5 px-4 rounded-xl bg-dark-800 group-hover:bg-brand-orange group-hover:text-dark-900 text-slate-200 font-semibold text-xs transition-all flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-4 rounded-lg bg-[#141A26] group-hover:bg-[#D4F835] group-hover:text-slate-900 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                 >
-                  <span>{user ? 'View The Streak' : 'Sign In for The Streak'}</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span>{user ? 'View Atelier Streak' : 'Sign In for The Streak'}</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
