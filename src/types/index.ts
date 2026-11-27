@@ -1,15 +1,15 @@
 export type DrawingSurface = 'whiteboard' | 'paper' | 'sketch';
 
-export type DrawingTool = 
-  | 'pen' 
-  | 'pencil' 
-  | 'marker' 
-  | 'sketch' 
-  | 'eraser' 
-  | 'line' 
-  | 'rectangle' 
-  | 'circle' 
-  | 'arrow' 
+export type DrawingTool =
+  | 'pen'
+  | 'pencil'
+  | 'marker'
+  | 'sketch'
+  | 'eraser'
+  | 'line'
+  | 'rectangle'
+  | 'circle'
+  | 'arrow'
   | 'fill';
 
 export interface Technique {
@@ -30,7 +30,15 @@ export interface Technique {
   recommendedColor: string;
   recommendedWidth: number;
   tags: string[];
-  illustrationType: 'gesture' | 'hatching' | 'stippling' | 'blending' | 'perspective' | 'lighting' | 'lineart' | 'textures';
+  illustrationType:
+    | 'gesture'
+    | 'hatching'
+    | 'stippling'
+    | 'blending'
+    | 'perspective'
+    | 'lighting'
+    | 'lineart'
+    | 'textures';
 }
 
 export interface UserProfile {
@@ -43,6 +51,9 @@ export interface UserProfile {
   bestStreak: number;
   totalDrawings: number;
   lastDrawnDate?: string;
+  monthlyStreak?: number;
+  monthlyDrawings?: number;
+  monthlyKey?: string;
   badges: string[];
 }
 
@@ -52,9 +63,22 @@ export interface LeaderboardEntry {
   name: string;
   avatar: string;
   streak: number;
+  bestStreak: number;
   totalDrawings: number;
+  monthlyStreak: number;
+  monthlyDrawings: number;
+  lastDrawnDate?: string;
   badge: string;
   isCurrentUser?: boolean;
+  joinedAt?: string;
+}
+
+export interface LeaderboardResponse {
+  allTime: LeaderboardEntry[];
+  thisMonth: LeaderboardEntry[];
+  source: 'supabase' | 'api' | 'local';
+  needsTableSetup?: boolean;
+  error?: string;
 }
 
 export interface DailyPrompt {

@@ -29,14 +29,14 @@ export function App() {
     promptTitle?: string;
   }>({});
 
-  // Check auth session on load (including Supabase OAuth redirect callback)
+  // Check auth session on load (including Supabase auth state changes)
   useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
     async function loadUser() {
-      // Check for Supabase session or local profile
       const profile = await getCurrentUser();
       setUser(profile);
 
-      // Listen to Supabase auth state changes if client exists
       const client = getSupabaseClient();
       if (client) {
         const { data: { subscription } } = client.auth.onAuthStateChange(async (_event, session) => {
@@ -47,10 +47,14 @@ export function App() {
             setUser(null);
           }
         });
-        return () => subscription.unsubscribe();
+        unsubscribe = () => subscription.unsubscribe();
       }
     }
     loadUser();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const handleSignOut = async () => {
@@ -134,6 +138,7 @@ export function App() {
             onClearTechniquePrompt={() => setPadPresets(prev => ({ ...prev, promptTitle: undefined }))}
             user={user}
             onStreakUpdated={handleStreakUpdated}
+            onOpenAuth={() => setIsAuthModalOpen(true)}
           />
         )}
 

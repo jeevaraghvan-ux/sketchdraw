@@ -19,6 +19,7 @@ interface PadProps {
   onClearTechniquePrompt?: () => void;
   user: UserProfile | null;
   onStreakUpdated: (profile: UserProfile, message: string) => void;
+  onOpenAuth: () => void;
 }
 
 const COLOR_PALETTE = [
@@ -44,7 +45,8 @@ export const Pad: React.FC<PadProps> = ({
   activeTechniquePrompt,
   onClearTechniquePrompt,
   user,
-  onStreakUpdated
+  onStreakUpdated,
+  onOpenAuth
 }) => {
   // Surface and Tool State
   const [surface, setSurface] = useState<DrawingSurface>(initialSurface);
@@ -74,6 +76,7 @@ export const Pad: React.FC<PadProps> = ({
   // Notifications & UI
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [isSavingStreak, setIsSavingStreak] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -401,21 +404,39 @@ export const Pad: React.FC<PadProps> = ({
   };
 
   // Log to daily streak
-  const handleSaveToStreak = () => {
-    const artistName = user?.name ? `${user.name}'s ` : '';
-    const title = activeTechniquePrompt || `${artistName}Study on ${surface.toUpperCase()} surface`;
-    const result = recordDailyDrawing(title, surface);
-    
-    // Trigger celebratory confetti burst
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.7 },
-      colors: ['#06B6D4', '#EC4899', '#8B5CF6', '#F97316', '#FBBF24']
-    });
+  const handleSaveToStreak = async () => {
+    if (isSavingStreak) return;
+    if (!user) {
+      showToast('Sign in or create an account to save your streak!');
+      onOpenAuth();
+      return;
+    }
 
-    onStreakUpdated(result.updatedProfile, result.message);
-    showToast(result.message);
+    setIsSavingStreak(true);
+    try {
+      const artistName = user.name ? `${user.name}'s ` : '';
+      const title = activeTechniquePrompt || `${artistName}Study on ${surface.toUpperCase()} surface`;
+      const result = await recordDailyDrawing(title, surface);
+
+      if (result.requiresAuth || !result.updatedProfile) {
+        showToast(result.message);
+        if (result.requiresAuth) onOpenAuth();
+        return;
+      }
+
+      // Trigger celebratory confetti burst
+      confetti({
+        particleCount: 80,
+        spread: 70,
+        origin: { y: 0.7 },
+        colors: ['#5294A6', '#B85333', '#B59A57', '#F5F2EB']
+      });
+
+      onStreakUpdated(result.updatedProfile, result.message);
+      showToast(result.message);
+    } finally {
+      setIsSavingStreak(false);
+    }
   };
 
   // Export functions
